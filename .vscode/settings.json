@@ -1,0 +1,5 @@
+{
+    "java.configuration.updateBuildConfiguration": "interactive",
+    "processing.py.javaPath": "/usr/bin/java",
+    "java.debug.settings.onBuildFailureProceed": true
+}

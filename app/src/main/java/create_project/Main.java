@@ -8,21 +8,22 @@ import processing.core.PApplet;
 public class Main extends PApplet{
 
     public void settings(){
-        size(400, 400);
+        size(800, 800);
     }
 
     public void setup(){
+        size(800, 800);
         background(0);
-        noStroke();
+        frameRate(60);
+        GameInstance.getInstance().setGraphics(createGraphics(800,800));
     }
 
     public void draw(){
-        fill(255);
-        ellipse(mouseX, mouseY, 20, 20);
+        image(GameInstance.getInstance().getGraphics(), 0, 0);
     }
 
     public void mousePressed(){
-		background(64);
+
 	}
 	
 	public static void main(String[] args){

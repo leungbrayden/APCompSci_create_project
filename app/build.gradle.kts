@@ -13,11 +13,27 @@ plugins {
 repositories {
     // Use Maven Central for resolving dependencies.
     mavenCentral()
+    maven("https://jogamp.org/deployment/maven")
+    maven("https://repo.clojars.org/")
+    maven("https://maven.scijava.org/content/repositories/public/")
 }
 
 dependencies {
-    // https://mvnrepository.com/artifact/org.processing/core
-    implementation("org.processing:core:4.3.3")
+    implementation("org.processing:core:3.3.7")
+
+    
+    implementation("org.jogamp.gluegen:gluegen-rt-natives-macosx-universal:2.1.5")
+    implementation("org.jogamp.gluegen:gluegen-rt:2.3.2")
+
+
+    implementation("org.jogamp.jogl:jogl-all-natives-macosx-universal:2.1.5")
+    implementation("org.jogamp.jogl:jogl-all:2.3.2")
+
+
+
+
+
+
     // Use JUnit Jupiter for testing.
     testImplementation(libs.junit.jupiter)
 
@@ -36,7 +52,7 @@ java {
 
 application {
     // Define the main class for the application.
-    mainClass = "create_project.App"
+    mainClass = "create_project.Main"
 }
 
 tasks.named<Test>("test") {

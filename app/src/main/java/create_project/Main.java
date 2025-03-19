@@ -19,6 +19,7 @@ public class Main extends PApplet{
     }
 
     public void draw(){
+        GameInstance.getInstance().draw();
         image(GameInstance.getInstance().getGraphics(), 0, 0);
     }
 

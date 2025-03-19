@@ -22,7 +22,7 @@ public class GameInstance {
         this.graphics = graphics;
     }
 
-    private void draw() {
+    public void draw() {
         graphics.beginDraw();
         graphics.lights();
         graphics.background(0);

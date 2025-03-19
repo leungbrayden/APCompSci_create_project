@@ -26,16 +26,6 @@ public class GameInstance {
         graphics.beginDraw();
         graphics.lights();
         graphics.background(0);
-        float far = graphics.map(graphics.mouseX, 0, graphics.width, 120, 400);
-        if (showPerspective == true) {
-            graphics.perspective(PApplet.PI / 3.0f, (float) graphics.width / (float) graphics.height, 10, far);
-        } else {
-            graphics.ortho(-graphics.width / 2.0f, graphics.width / 2.0f, -graphics.height / 2.0f, graphics.height / 2.0f, 10, far);
-        }
-        graphics.translate(graphics.width / 2, graphics.height / 2, 0);
-        graphics.rotateX(-PApplet.PI / 6);
-        graphics.rotateY(PApplet.PI / 3);
-        graphics.box(180);
         graphics.endDraw();
     }
 

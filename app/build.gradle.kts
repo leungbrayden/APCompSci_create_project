@@ -19,16 +19,14 @@ repositories {
 }
 
 dependencies {
-    implementation("org.processing:core:3.3.7")
-
-    
-    implementation("org.jogamp.gluegen:gluegen-rt-natives-macosx-universal:2.1.5")
-    implementation("org.jogamp.gluegen:gluegen-rt:2.3.2")
-
-
-    implementation("org.jogamp.jogl:jogl-all-natives-macosx-universal:2.1.5")
     implementation("org.jogamp.jogl:jogl-all:2.3.2")
+    // implementation("org.jogamp.jogl:jogl-all-natives-macosx-universal:2.1.5")
+    
+    
+    implementation("org.jogamp.gluegen:gluegen-rt:2.3.2")
+    // implementation("org.jogamp.gluegen:gluegen-rt-natives-macosx-universal:2.1.5")
 
+    implementation("org.processing:core:3.3.7")
 
 
 
@@ -46,7 +44,7 @@ dependencies {
 // Apply a specific Java toolchain to ease working on different environments.
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(8)
     }
 }
 

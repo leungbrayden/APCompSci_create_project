@@ -1,24 +1,20 @@
-package create_project;
+package create_project.GameObjects;
 
 import processing.core.PVector;
+import processing.core.PGraphics;
 
 public abstract class GameObject {
-    private PVector position;
-    private PVector velocity;
-    private PVector acceleration;
-
-    GameObject(PVector position) {
-        this.position = position;
-        this.velocity = new PVector(0, 0, 0);
-        this.acceleration = new PVector(0, 0, 0);
-    }
+    public PVector position;
+    public PVector velocity;
+    public PVector acceleration;
+    public double weight;
 
     public void update() {
         velocity.add(acceleration);
         position.add(velocity);
     }
 
-    abstract void draw();
+    public abstract void draw(PGraphics pg);
 
     public PVector getPosition() {
         return position;
@@ -44,4 +40,11 @@ public abstract class GameObject {
         this.acceleration = acceleration;
     }
 
+    public double getWeight() {
+        return weight;
+    }
+
+    public void setWeight(double weight) {
+        this.weight = weight;
+    }
 }

@@ -21,6 +21,8 @@ public class GameInstance{
         gameObjects = new ArrayList<>();
         gameObjects.add(new Box(new PVector(0.f,-1.f,345.4375f + 20), Integer.MAX_VALUE, 317, 2, 690.875));
         robot = new Robot(true, 1234);
+
+        gameObjects.add(new Box(new PVector(0.f,-1.f,345.4375f + 20), 20, 4.5, 12, 4.5));
     }
 
     public static GameInstance getInstance() {

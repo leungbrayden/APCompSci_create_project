@@ -1,5 +1,7 @@
 package create_project.GameObjects;
 
+import com.jogamp.graph.geom.Triangle;
+
 import processing.core.PGraphics;
 import processing.core.PVector;
 
@@ -22,6 +24,7 @@ public class coral extends GameObject{
         pg.box((float) width, (float) height, (float) depth);
         pg.popMatrix();
     }
+     private static final float twoPi = (float) Math.PI * 2;
     
     public double getWidth() {
         return width;
@@ -54,8 +57,6 @@ public class coral extends GameObject{
     public double getSurfaceArea() {
         return 2 * (width * height + width * depth + height * depth);
     }
-    
-    
 
     public void applyForce(PVector force) {
         PVector acceleration = PVector.div(force, (float) getWeight());
@@ -67,7 +68,18 @@ public class coral extends GameObject{
         setVelocity(velocity);
     }
 
-    private void cylinderDraw(){
+    private void cylinderDraw(PGraphics pg, float width, float height){
+        int sides = 30;
+        float angleSteps = twoPi / sides;
+
+        pg.pushMatrix();
+        pg.translate(getPosition().x, getPosition().y, getPosition().z);
+        pg.beginShape(TRIANGLE_STRIP);
+
+        for(int i = 0; i <= sides; i++){
+
+        }
+
         
     }
     

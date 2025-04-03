@@ -17,11 +17,21 @@ public class GameInstance{
     private GameInstance() {
         gameObjects = new ArrayList<>();
         gameObjects.add(
-            new Box(new PVector(0.f,-1.f,345.4375f + 20), Integer.MAX_VALUE, 317, 2, 690.875)
+            new Box(new PVector(0.f,-1.f,345.4375f + 20), Integer.MAX_VALUE, 317, 2, 690.875, 127)
             .disableCollision());
         robot = new Robot(true, 1234);
 
-        gameObjects.add(new Box(new PVector(0.f,-1.f,345.4375f + 20), 20, 4.5, 12, 4.5));
+        //gameObjects.add(new Box(new PVector(0.f,-1.f,345.4375f + 20), 20, 4.5, 12, 4.5, 0));
+
+        float fieldWidth = 317;
+        float fieldDepth = 690.875f;
+        float wallThickness = 2;
+        float wallHeight = 50;
+
+        gameObjects.add(new Box(new PVector(0,-1.f,fieldDepth), Integer.MAX_VALUE, fieldWidth, 40, 4,255));
+        gameObjects.add(new Box(new PVector(0,-1.f, 20), Integer.MAX_VALUE, fieldWidth, 20, 4,255));
+        gameObjects.add(new Box(new PVector(-fieldWidth/2,0.f,0), Integer.MAX_VALUE, 4, 40, fieldDepth,255));
+        gameObjects.add(new Box(new PVector(fieldWidth/2,0.f, 0), Integer.MAX_VALUE, 4, 40, fieldDepth,255));
     }
 
     public static GameInstance getInstance() {
@@ -69,4 +79,5 @@ public class GameInstance{
         draw();
         return graphics;
     }
+
 }

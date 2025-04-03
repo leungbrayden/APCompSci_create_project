@@ -2,24 +2,24 @@ package create_project.GameObjects;
 
 import processing.core.PGraphics;
 import processing.core.PVector;
-import processing.core.PGraphics;
-import processing.core.PVector;
 
 public class Box extends GameObject{
     private double width;
     private double height;
     private double depth;
+    private int colour;
 
-    public Box(PVector position, double weight, double width, double height, double depth) {
+    public Box(PVector position, double weight, double width, double height, double depth, int colour) {
         this.width = width;
         this.height = height;
         this.depth = depth;
         this.position = position;
+        this.colour = colour;
     }
 
     public void draw(PGraphics pg) {
         pg.pushMatrix();
-        pg.fill(127);
+        pg.fill(colour);
         pg.translate(getPosition().x, getPosition().y, getPosition().z);
         pg.box((float) width, (float) height, (float) depth);
         pg.popMatrix();

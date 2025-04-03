@@ -55,8 +55,6 @@ public class coral extends GameObject{
         return 2 * (width * height + width * depth + height * depth);
     }
     
-    
-
     public void applyForce(PVector force) {
         PVector acceleration = PVector.div(force, (float) getWeight());
         setAcceleration(acceleration);

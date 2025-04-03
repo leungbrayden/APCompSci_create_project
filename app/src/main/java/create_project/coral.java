@@ -1,4 +1,4 @@
-package create_project.GameObjects;
+package create_project;
 
 import processing.core.PGraphics;
 import processing.core.PVector;

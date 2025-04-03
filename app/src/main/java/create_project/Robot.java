@@ -1,4 +1,4 @@
-package create_project.GameObjects;
+package create_project;
 
 import processing.core.PGraphics;
 import processing.core.PVector;
@@ -15,11 +15,14 @@ public class Robot extends GameObject {
     this.teamNumber = teamNumber;
     this.position = new PVector(0.f, 0.f, 297.5f);
     this.velocity = new PVector(0, 0, 0);
+    this.setVertices(
+        new Vertex(width * 0.5, length * 0.5),
+        new Vertex(-width * 0.5, length * 0.5),
+        new Vertex(-width * 0.5, -length * 0.5),
+        new Vertex(width * 0.5, -length * 0.5));
   }
 
   public void draw(PGraphics pg) {
-    System.out.println(position.x);
-    System.out.println(position.z);
     pg.pushMatrix();
     pg.fill(128,0,0);
     pg.translate(position.x, position.y, position.z);

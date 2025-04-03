@@ -1,4 +1,4 @@
-package create_project.GameObjects;
+package create_project;
 
 import processing.core.PGraphics;
 import processing.core.PVector;
@@ -15,6 +15,11 @@ public class Box extends GameObject{
         this.height = height;
         this.depth = depth;
         this.position = position;
+        this.setVertices(
+            new Vertex(width*0.5, depth*0.5), 
+            new Vertex(-width*0.5, depth*0.5), 
+            new Vertex(-width*0.5, -depth*0.5), 
+            new Vertex(width*0.5 , -depth*0.5));
     }
 
     public void draw(PGraphics pg) {
@@ -23,6 +28,11 @@ public class Box extends GameObject{
         pg.translate(getPosition().x, getPosition().y, getPosition().z);
         pg.box((float) width, (float) height, (float) depth);
         pg.popMatrix();
+    }
+
+    public Box disableCollision() {
+        this.setVertices();
+        return this;
     }
     
     public double getWidth() {

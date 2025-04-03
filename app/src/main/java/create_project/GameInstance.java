@@ -3,9 +3,6 @@ package create_project;
 import java.util.ArrayList;
 import java.util.List;
 
-import create_project.GameObjects.Box;
-import create_project.GameObjects.GameObject;
-import create_project.GameObjects.Robot;
 import processing.core.PGraphics;
 import processing.core.PVector;
 
@@ -19,7 +16,9 @@ public class GameInstance{
 
     private GameInstance() {
         gameObjects = new ArrayList<>();
-        gameObjects.add(new Box(new PVector(0.f,-1.f,345.4375f + 20), Integer.MAX_VALUE, 317, 2, 690.875));
+        gameObjects.add(
+            new Box(new PVector(0.f,-1.f,345.4375f + 20), Integer.MAX_VALUE, 317, 2, 690.875)
+            .disableCollision());
         robot = new Robot(true, 1234);
 
         gameObjects.add(new Box(new PVector(0.f,-1.f,345.4375f + 20), 20, 4.5, 12, 4.5));
@@ -46,6 +45,13 @@ public class GameInstance{
     }
 
     public void draw() {
+        for (GameObject gameObject : gameObjects) {
+            for (GameObject otherGameObject : gameObjects) {
+                if (gameObject != otherGameObject) {
+                    gameObject.checkCollision(otherGameObject);
+                }
+            }
+        }
         graphics.beginDraw();
         graphics.background(0);
         graphics.camera(0.0f,72.0f,-24.0f, robot.getPosition().x, robot.getPosition().y, robot.getPosition().z,

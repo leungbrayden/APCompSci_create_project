@@ -24,14 +24,14 @@ public class GameInstance{
         //gameObjects.add(new Box(new PVector(0.f,-1.f,345.4375f + 20), 20, 4.5, 12, 4.5, 0));
 
         float fieldWidth = 317;
-        float fieldDepth = 690.875f;
+        float fieldDepth = 690f;
         float wallThickness = 2;
         float wallHeight = 50;
 
-        gameObjects.add(new Box(new PVector(0,-1.f,fieldDepth), Integer.MAX_VALUE, fieldWidth, 40, 4,255));
-        gameObjects.add(new Box(new PVector(0,-1.f, 20), Integer.MAX_VALUE, fieldWidth, 20, 4,255));
-        gameObjects.add(new Box(new PVector(-fieldWidth/2,0.f,0), Integer.MAX_VALUE, 4, 40, fieldDepth,255));
-        gameObjects.add(new Box(new PVector(fieldWidth/2,0.f, 0), Integer.MAX_VALUE, 4, 40, fieldDepth,255));
+        gameObjects.add(new Box(new PVector(0,-1.f,fieldDepth), Integer.MAX_VALUE, fieldWidth, 40, 4,255)); 
+        gameObjects.add(new Box(new PVector(0,-1.f, 20), Integer.MAX_VALUE, fieldWidth, 20, 4,255)); 
+        gameObjects.add(new Box(new PVector(-fieldWidth/2,0.f,(fieldDepth/2)+5), Integer.MAX_VALUE, 4, 40, fieldDepth-25, 255));
+        gameObjects.add(new Box(new PVector(fieldWidth/2,0.f, fieldDepth/2+5), Integer.MAX_VALUE, 4, 40, fieldDepth-25, 255));
     }
 
     public static GameInstance getInstance() {

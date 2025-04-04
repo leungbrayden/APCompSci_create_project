@@ -59,7 +59,7 @@ public class Main extends PApplet{
         keysHeld.remove(Character.valueOf(key));
     }
 	
-	public static void main(){
+	public static void main(String[] args){
 		String[] processingArgs = {"MySketch"};
 		Main app = new Main();
 		PApplet.runSketch(processingArgs, app);

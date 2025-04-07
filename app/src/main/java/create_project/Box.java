@@ -1,39 +1,43 @@
 package create_project;
 
+import create_project.util.Vector2D;
 import processing.core.PGraphics;
 import processing.core.PVector;
 
 public class Box extends GameObject{
-    private double width;
-    private double height;
-    private double depth;
+    private double width, height, depth;
     private int colour;
 
+    private float objectY = 0.f;
+
     public Box(PVector position, double weight, double width, double height, double depth, int colour) {
+
+        super(new Vector2D[] {
+            new Vector2D(width * 0.5, depth * 0.5),
+            new Vector2D(-width * 0.5, depth * 0.5),
+            new Vector2D(-width * 0.5, -depth * 0.5),
+            new Vector2D(width * 0.5, -depth * 0.5)
+        }, new Vector2D(position.x,position.z), weight);
         this.width = width;
         this.height = height;
         this.depth = depth;
-        this.position = position;
-        this.setVertices(
-            new Vertex(width*0.5, depth*0.5), 
-            new Vertex(-width*0.5, depth*0.5), 
-            new Vertex(-width*0.5, -depth*0.5), 
-            new Vertex(width*0.5 , -depth*0.5));
+        this.objectY = position.y;
         this.colour = colour;
-        this.weight = weight;
+        this.setInertia(weight * (width * width + depth * depth) / 12.0);
     }
 
+    @Override
     public void draw(PGraphics pg) {
         pg.pushMatrix();
         pg.fill(colour);
-        pg.translate(getPosition().x, getPosition().y, getPosition().z);
-        pg.box((float) width, (float) height, (float) depth);
+        pg.translate((float) this.getPosition().getX(), (float) objectY, (float) this.getPosition().getY());
+        pg.rotateY((float) getRotation());
+        pg.box((float) this.getWidth(), (float) this.getHeight(), (float) this.getDepth());
         pg.popMatrix();
     }
 
-    public Box disableCollision() {
-        this.setCollidable(false);
-        this.setVertices();
+    public Box isStatic() {
+        this.setStatic(true);
         return this;
     }
     
@@ -69,17 +73,6 @@ public class Box extends GameObject{
         return 2 * (width * height + width * depth + height * depth);
     }
     
-    
-
-    public void applyForce(PVector force) {
-        PVector acceleration = PVector.div(force, (float) getWeight());
-        setAcceleration(acceleration);
-    }
-    
-    public void applyImpulse(PVector impulse) {
-        PVector velocity = PVector.div(impulse, (float) getWeight());
-        setVelocity(velocity);
-    }
     
     //public void applyTorque(float torque) {
     //    // Implement the logic for applying torque to the box here

@@ -4,13 +4,14 @@ package create_project;
 import java.util.ArrayList;
 import java.util.List;
 
+import create_project.util.Constants;
+import create_project.util.Vector2D;
 import processing.core.PApplet;
-import processing.core.PVector;
 
 public class Main extends PApplet{
 
     public void settings(){
-        size(1080, 800, P2D);
+        size(1080, 720, P2D);
     }
 
     List<Character> keysHeld = new ArrayList<Character>();
@@ -18,8 +19,8 @@ public class Main extends PApplet{
     public void setup(){
         // size(1080, 800, P2D);
         background(0);
-        frameRate(60);
-        GameInstance.getInstance().setGraphics(createGraphics(1080,800, P3D));
+        frameRate(Constants.FRAMERATE);
+        GameInstance.getInstance().setGraphics(createGraphics(1080,720, P3D));
     }
 
     public void draw(){
@@ -33,24 +34,27 @@ public class Main extends PApplet{
   }
 
     public void handleMovement() {
-        PVector movement = new PVector(0, 0, 0);
+        Vector2D movement = new Vector2D(0, 0);
+
+        if (keysHeld.contains('q')) {
+            GameInstance.getInstance().rotateRobot(-1);
+        }
+        if (keysHeld.contains('e')) {
+            GameInstance.getInstance().rotateRobot(1);
+        }
         if (keysHeld.contains('w')) {
-            movement.add(0, 0, 1);
+            movement.add(0, 1);
         }
         if (keysHeld.contains('s')) {
-            movement.add(0, 0, -1);
+            movement.add(0, -1);
         }
         if (keysHeld.contains('a')) {
-            movement.add(-1, 0, 0);
+            movement.add(-1, 0);
         }
         if (keysHeld.contains('d')) {
-            movement.add(1, 0, 0);
+            movement.add(1, 0);
         }
-        if (movement.equals(new PVector(0, 0, 0))) {
-            GameInstance.getInstance().stopRobot();
-            return;
-        }
-        GameInstance.getInstance().moveRobot(movement.normalize());
+        GameInstance.getInstance().moveRobot(movement.normal());
     }
 
     public void keyPressed() {

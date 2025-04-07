@@ -1,12 +1,11 @@
-package create_project;
+package collision_tests;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import create_project.util.Constants;
-import create_project.util.Vector2D;
+import collision_tests.util.Constants;
+import collision_tests.util.Vector2D;
 import processing.core.PApplet;
-import processing.core.PGraphics;
 
 public class GameObject {
     private Vector2D position, velocity, acceleration;
@@ -30,7 +29,7 @@ public class GameObject {
         this.vertices = vertices;
 
         this.isCollidable = true;
-        this.restitution = 0.9;
+        this.restitution = 0.5;
         this.friction = .001;
         this.inertia = 10.0; // Assuming a simple shape for inertia calculation
         this.collidable = true; // Default to collidable
@@ -55,14 +54,9 @@ public class GameObject {
     }
 
     public void checkCollision(GameObject other) {
-        // System.out.println("Checking collision between " + this + " and " + other);
         // separating axis theorem
         if (!this.isCollidable || !other.isCollidable) {
             return; // No collision check if either object is not collidable
-        }
-
-        if (this.isStatic && other.isStatic) {
-            return; // No collision check if both objects are static
         }
 
         if (this.collidable == false || other.collidable == false) {
@@ -233,7 +227,7 @@ public class GameObject {
         other.applyImpulse(frictionImpulse, rb);
 
         // Positional correction to avoid sinking
-        final double percent = 0.6; // 20% of penetration
+        final double percent = 0.2; // 20% of penetration
         final double slop = 0.01;
         Vector2D correction = Vector2D.mult(collisionNormal, (Math.max(minOverlap - slop, 0.0) / ((1./this.mass) + (1./other.mass)) * percent));
         this.setPosition(Vector2D.sub(this.position,Vector2D.mult(correction,(1./this.mass))));
@@ -246,8 +240,8 @@ public class GameObject {
     }
 
     public void update() {
-        collidable = true;
         if (!isStatic) {
+            collidable = true; // Reset collidable status for the next frame
             // postion updates
             position.add(Vector2D.mult(velocity, Constants.deltaTime));
             velocity.add(Vector2D.mult(acceleration, Constants.deltaTime));
@@ -261,19 +255,18 @@ public class GameObject {
         }
     }
 
-    public void draw(PGraphics app) {
-        System.out.println("Drawing object at: " + position);
-        // app.fill(127);
-        // app.stroke(0);
-        // app.strokeWeight(2);
-        // app.beginShape();
-        // for (Vector2D vertex : vertices) {
+    public void draw(PApplet app) {
+        app.fill(127);
+        app.stroke(0);
+        app.strokeWeight(2);
+        app.beginShape();
+        for (Vector2D vertex : vertices) {
 
-        //     Vector2D newVertex = vertex.copy().rotate(this.getRotation());
-        //     Vector2D point = new Vector2D((position.getX() + newVertex.getX()),(position.getY() + newVertex.getY()));
-        //     app.vertex((float) point.getX(), (float) point.getY());
-        // }
-        // app.endShape(2);
+            Vector2D newVertex = vertex.copy().rotate(this.getRotation());
+            Vector2D point = new Vector2D((position.getX() + newVertex.getX()),(position.getY() + newVertex.getY()));
+            app.vertex((float) point.getX(), (float) point.getY());
+        }
+        app.endShape(2);
     }
 
     public void setPosition(Vector2D position) {
@@ -319,17 +312,5 @@ public class GameObject {
     public void applyImpulse(Vector2D impulse, Vector2D point) {
         this.velocity.add(Vector2D.mult(impulse, (1./this.mass)));
         this.angularVelocity += Vector2D.cross(point,impulse) / this.inertia;
-    }
-
-    public void notCollidable() {
-        this.isCollidable = false;
-    }
-
-    public void setStatic(boolean isStatic) {
-        this.isStatic = isStatic;
-    }
-
-    public void setInertia(double inertia) {
-        this.inertia = inertia;
     }
 }

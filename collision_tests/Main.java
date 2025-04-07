@@ -3,54 +3,61 @@ package collision_tests;
 import java.util.ArrayList;
 import java.util.List;
 
+import collision_tests.util.Constants;
+import collision_tests.util.Logger;
+import collision_tests.util.Vector2D;
 import processing.core.PApplet;
-import processing.core.PVector;
 
 public class Main extends PApplet{
-    private List<GameObject> gameObjects = new ArrayList<>();
     List<Character> keysHeld = new ArrayList<Character>();
+    GameObject square;
     Robot robot;
+    List<GameObject> objects = new ArrayList<GameObject>();
 
     public void settings(){
         size(1080, 800, P2D);
     }
 
     public void setup(){
-        // background();
-        frameRate(240);
-        // gameObjects.add(new GameObject(new PVector(0f, 0f), 1, 50, 50));
-        robot = new Robot(1234);
-        gameObjects.add(robot);
-        gameObjects.add(new GameObject(new PVector(500,500), 100., 50, 50));
-        // gameObjects.add(new GameObject(new PVector(500, 540), 1., 50, 50));
-        rectMode(CENTER);
+        frameRate(Constants.FRAMERATE);
+        square = new GameObject(new Vector2D[] {
+            new Vector2D(25,25),
+            new Vector2D(-25, 25),
+            new Vector2D(-25, -25),
+            new Vector2D(25, -25)
+        });
+        robot = new Robot();
+        objects.add(square);
+        objects.add(robot);
+
         strokeWeight(2);
-        Logger.init(this);
-        
+
+        square.setPosition(new Vector2D(500,500));
     }
 
     public void draw(){
-        background(50);
         handleMovement();
-        for (GameObject obj : gameObjects) {
-            obj.draw(this);
+        background(50);
+        for (GameObject obj : objects) {
             obj.update();
-            for (GameObject other : gameObjects) {
+            obj.draw(this);
+            for (GameObject other : objects) {
                 if (obj != other) {
                     obj.checkCollision(other);
                 }
             }
         }
+        Logger.draw(this);
     }
 
     public void handleMovement() {
-        PVector movement = new PVector(0, 0);
-        // System.out.println("Keys held: " + keysHeld);
-        if(keysHeld.contains('q')) {
-            robot.rotate(-PI/60);
+        Vector2D movement = new Vector2D(0, 0);
+
+        if (keysHeld.contains('q')) {
+            robot.setAngularVelocity(-1);
         }
-        if(keysHeld.contains('e')) {
-            robot.rotate(PI/60);
+        if (keysHeld.contains('e')) {
+            robot.setAngularVelocity(1);
         }
         if (keysHeld.contains('w')) {
             movement.add(0, -1);
@@ -64,18 +71,10 @@ public class Main extends PApplet{
         if (keysHeld.contains('d')) {
             movement.add(1, 0);
         }
-        // System.out.println("Movement: " + movement);
-        if (movement.equals(new PVector(0, 0))) {
-            robot.stop();
-            return;
-        }
-        robot.move(movement.normalize());
+        robot.move(movement.normal());
     }
 
     public void keyPressed() {
-        if (key == 'l') {
-            robot.applyImpulse(new PVector(10, 10), new PVector(-5, -5).normalize());
-        }
         if (!keysHeld.contains(key)) {
             keysHeld.add(key);
         }

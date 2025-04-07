@@ -3,6 +3,7 @@ package create_project;
 import java.util.ArrayList;
 import java.util.List;
 
+import create_project.util.Vector2D;
 import processing.core.PGraphics;
 import processing.core.PVector;
 
@@ -16,23 +17,25 @@ public class GameInstance{
 
     private GameInstance() {
         gameObjects = new ArrayList<>();
-        gameObjects.add(
-            new Box(new PVector(0.f,-1.f,345.4375f + 20), Integer.MAX_VALUE, 317, 2, 690.875, 127)
-            .disableCollision());
+        Box floor = new Box(new PVector(0.f,-1.f,345.4375f + 20), Integer.MAX_VALUE, 317, 2, 690.875, 127);
+        floor.notCollidable();
+        floor.setStatic(true);
+        
+        gameObjects.add(floor);
         robot = new Robot(true, 1234);
         gameObjects.add(robot);
 
-        //gameObjects.add(new Box(new PVector(0.f,-1.f,345.4375f + 20), 20, 4.5, 12, 4.5, 0));
+        gameObjects.add(new Box(new PVector(0.f,-1.f,345.4375f + 20), 20, 4.5, 12, 4.5, 0));
 
         float fieldWidth = 317;
         float fieldDepth = 690f;
         float wallThickness = 2;
         float wallHeight = 50;
 
-        gameObjects.add(new Box(new PVector(0,-1.f,fieldDepth), Integer.MAX_VALUE, fieldWidth, 40, 4,255)); 
-        gameObjects.add(new Box(new PVector(0,-1.f, 20), Integer.MAX_VALUE, fieldWidth, 20, 4,255)); 
-        gameObjects.add(new Box(new PVector(-fieldWidth/2,0.f,(fieldDepth/2)+5), Integer.MAX_VALUE, 4, 40, fieldDepth-25, 255));
-        gameObjects.add(new Box(new PVector(fieldWidth/2,0.f, fieldDepth/2+5), Integer.MAX_VALUE, 4, 40, fieldDepth-25, 255));
+        gameObjects.add(new Box(new PVector(0,-1.f,fieldDepth), Integer.MAX_VALUE, fieldWidth, 40, 10,255).isStatic()); 
+        gameObjects.add(new Box(new PVector(0,-1.f, 20), Integer.MAX_VALUE, fieldWidth, 20, 20,255).isStatic()); 
+        gameObjects.add(new Box(new PVector(-fieldWidth/2,0.f,(fieldDepth/2)+5), Integer.MAX_VALUE, 10, 40, fieldDepth-25, 255).isStatic());
+        gameObjects.add(new Box(new PVector(fieldWidth/2,0.f, fieldDepth/2+5), Integer.MAX_VALUE, 10, 40, fieldDepth-25, 255).isStatic());
     }
 
     public static GameInstance getInstance() {
@@ -42,12 +45,12 @@ public class GameInstance{
         return instance;
     }
     
-    public void moveRobot(PVector direction) {
+    public void moveRobot(Vector2D direction) {
         robot.move(direction);
     }
-
-    public void stopRobot() {
-        robot.stop();
+    
+    public void rotateRobot(float angle) {
+        robot.setAngularVelocity(angle);
     }
 
     public void reset() {
@@ -68,10 +71,24 @@ public class GameInstance{
             }
         }
         graphics.beginDraw();
-        graphics.background(0);
-        graphics.camera(0.0f,72.0f,-24.0f, robot.getPosition().x, robot.getPosition().y, robot.getPosition().z,
+        graphics.background(50);
+        graphics.camera(0.0f,72.0f,-24.0f, (float) robot.getPosition().getX(), 0.f, (float) robot.getPosition().getY(),
           0.0f, -1.0f, 0.0f);
         graphics.noStroke();
+        graphics.pushMatrix();
+        graphics.translate(0f, 0f, (float) robot.getPosition().getY()); 
+        // graphics.rotateY(0.5f);
+        // graphics.noFill();
+        // graphics.box(50, 20, 50);
+        graphics.popMatrix();
+
+        // graphics.pushMatrix();
+        // graphics.fill(0xFFFF0000);
+        // graphics.translate((float) robot.getPosition().getX(), 0.f, (float) robot.getPosition().getY());
+        // // pg.rotateY((float) getRotation());
+        // graphics.box((float) 30, (float) 30, (float) 30);
+        // graphics.popMatrix();
+
         robot.draw(graphics);
         for (GameObject gameObject : gameObjects) {
             gameObject.update();

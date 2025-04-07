@@ -9,6 +9,7 @@ public class Coral extends GameObject{
 
     private final static float width = 11.875f;
     private final static float radius = 2.25f;
+    private float objectY = 0.f;
 
 
     public Coral(PVector position) {
@@ -18,13 +19,26 @@ public class Coral extends GameObject{
             new Vector2D(-width/2, -radius),
             new Vector2D(-width/2, radius),
         }, new Vector2D(position.x, position.z), 1);
+        this.objectY = position.y;
+    }
+
+    @Override
+    public void update() {
+        super.update();
+        if (isStatic()) {
+            return;
+        }
+        
     }
 
     @Override
     public void draw(PGraphics pg) {
+        if(!isVisible()) {
+            return;
+        }
         // draw cylinder
         pg.pushMatrix();
-        pg.translate((float) getPosition().getX(), 2.0f, (float)getPosition().getY());
+        pg.translate((float) getPosition().getX(), objectY, (float)getPosition().getY());
         pg.rotateY((float) getRotation());
         pg.fill(0xFFFFFFFF);
         pg.beginShape(18);

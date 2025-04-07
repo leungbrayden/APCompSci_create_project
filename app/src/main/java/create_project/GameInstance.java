@@ -3,6 +3,7 @@ package create_project;
 import java.util.ArrayList;
 import java.util.List;
 
+import processing.core.PApplet;
 import processing.core.PGraphics;
 import processing.core.PVector;
 
@@ -23,7 +24,7 @@ public class GameInstance{
         gameObjects.add(floor);
         robot = new Robot(true, 1234);
         gameObjects.add(robot);
-        gameObjects.add(new Coral(new PVector(0.f, 0.f, 100.f + 20)));
+        gameObjects.add(new Coral(new PVector(0.f, 2.25f, 100.f + 20)));
 
         // gameObjects.add(new Box(new PVector(0.f,-1.f,345.4375f + 20), 20, 4.5, 12, 4.5, 0));
 
@@ -61,6 +62,7 @@ public class GameInstance{
     }
 
     public void setGraphics(PGraphics graphics) {
+        Logger.init(graphics);
         this.graphics = graphics;
         graphics.fill(255);
     }
@@ -97,4 +99,7 @@ public class GameInstance{
         return graphics;
     }
 
+    public void drawHUD(PApplet app) {
+
+    }
 }

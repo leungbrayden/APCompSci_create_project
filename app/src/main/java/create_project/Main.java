@@ -25,6 +25,7 @@ public class Main extends PApplet{
         handleMovement();
         GameInstance.getInstance().draw();
         image(GameInstance.getInstance().getGraphics(), 0, 0);
+        GameInstance.getInstance().drawHUD(this);
     }
 
     public void mousePressed(){
@@ -59,7 +60,6 @@ public class Main extends PApplet{
         if (!keysHeld.contains(key)) {
             keysHeld.add(key);
         }
-        beginShape(QUAD_STRIP);
     }
 
     public void keyReleased() {

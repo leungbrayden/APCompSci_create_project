@@ -5,6 +5,7 @@ import java.util.List;
 
 import processing.core.PApplet;
 import processing.core.PGraphics;
+import processing.core.PVector;
 
 public class GameObject {
     private Vector2D position, velocity, acceleration;
@@ -103,7 +104,6 @@ public class GameObject {
             Vector2D edge = new Vector2D((v2.getX() - v1.getX()),(v2.getY() - v1.getY()));
             Vector2D axis = edge.perpendicular().normal();
             axes.add(axis);
-            // Logger.recordVector(Vector2D.mult(axis, 50f), Vector2D.add(position2, v1), 0xFF00FF00);
         }
 
         // Check for overlap on all axes
@@ -238,7 +238,8 @@ public class GameObject {
         other.setPosition(Vector2D.add(other.position,Vector2D.mult(correction,(1./other.mass))));
 
         // Logger.recordPoint(contactPoint, 0xCCFF0000);
-        // Logger.recordVector(Vector2D.mult(collisionNormal,100.f), contactPoint, 0xCC00FF00);
+        Logger.recordVector(Vector2D.mult(collisionNormal,100.f), 
+            new PVector((float) contactPoint.getX(), 0.f, (float) contactPoint.getY()), 0xFF00FFFF);
         this.collidable = false;
         other.collidable = false;
     }
@@ -329,5 +330,17 @@ public class GameObject {
 
     public void setInertia(double inertia) {
         this.inertia = inertia;
+    }
+
+    public void setVisible(boolean isVisible) {
+        this.isVisible = isVisible;
+    }
+
+    public boolean isVisible() {
+        return isVisible;
+    }
+
+    public boolean isStatic() {
+        return isStatic;
     }
 }

@@ -24,6 +24,7 @@ public class GameInstance{
         gameObjects.add(floor);
         robot = new Robot(true, 1234);
         gameObjects.add(robot);
+        gameObjects.add(new Coral(new PVector(0.f, 0.f, 100.f + 20)));
 
         gameObjects.add(new Box(new PVector(0.f,-1.f,345.4375f + 20), 20, 4.5, 12, 4.5, 0));
 
@@ -36,6 +37,9 @@ public class GameInstance{
         gameObjects.add(new Box(new PVector(0,-1.f, 20), Integer.MAX_VALUE, fieldWidth, 20, 20,255).isStatic()); 
         gameObjects.add(new Box(new PVector(-fieldWidth/2,0.f,(fieldDepth/2)+5), Integer.MAX_VALUE, 10, 40, fieldDepth-25, 255).isStatic());
         gameObjects.add(new Box(new PVector(fieldWidth/2,0.f, fieldDepth/2+5), Integer.MAX_VALUE, 10, 40, fieldDepth-25, 255).isStatic());
+
+        // sample rotation constructor: 
+        // gameObjects.add(new Box(new PVector(0.f,0.f,0.f), 20, 4.5, 12, 4.5, 0, (float) Math.PI/2));
     }
 
     public static GameInstance getInstance() {

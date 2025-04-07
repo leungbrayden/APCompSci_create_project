@@ -11,7 +11,6 @@ public class Box extends GameObject{
     private float objectY = 0.f;
 
     public Box(PVector position, double weight, double width, double height, double depth, int colour) {
-
         super(new Vector2D[] {
             new Vector2D(width * 0.5, depth * 0.5),
             new Vector2D(-width * 0.5, depth * 0.5),
@@ -24,6 +23,11 @@ public class Box extends GameObject{
         this.objectY = position.y;
         this.colour = colour;
         this.setInertia(weight * (width * width + depth * depth) / 12.0);
+    }
+
+    public Box(PVector position, double weight, double width, double height, double depth, int colour, double rotation) {
+        this(position, weight, width, height, depth, colour);
+        this.setRotation(rotation);
     }
 
     @Override

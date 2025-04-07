@@ -1,79 +1,44 @@
-// package create_project;
+package create_project;
 
-// import processing.core.PGraphics;
-// import processing.core.PVector;
+import create_project.util.Vector2D;
+import processing.core.PApplet;
+import processing.core.PGraphics;
+import processing.core.PShape;
+import processing.core.PVector;
 
-// public class coral extends GameObject{
-//  private double width;
-//     private double height;
-//     private double depth;
+public class Coral extends GameObject{
 
-//     public coral(PVector position, double weight, double width, double height, double depth) {
-//         this.width = width;
-//         this.height = height;
-//         this.depth = depth;
-//         this.position = position;
-//     }
+    private final static float width = 11.875f;
+    private final static float radius = 2.25f;
 
-//     public void draw(PGraphics pg) {
-//         pg.pushMatrix();
-//         pg.fill(127);
-//         pg.translate(getPosition().x, getPosition().y, getPosition().z);
-//         pg.box((float) width, (float) height, (float) depth);
-//         pg.popMatrix();
-//     }
-    
-//     public double getWidth() {
-//         return width;
-//     }
 
-//     public void setWidth(double width) {
-//         this.width = width;
-//     }
+    public Coral(PVector position) {
+        super(new Vector2D[] {
+            new Vector2D(width/2, radius),
+            new Vector2D(width/2, -radius),
+            new Vector2D(-width/2, -radius),
+            new Vector2D(-width/2, radius),
+        }, new Vector2D(position.x, position.z), 1);
+    }
 
-//     public double getHeight() {
-//         return height;
-//     }
+    @Override
+    public void draw(PGraphics pg) {
+        // draw cylinder
+        pg.pushMatrix();
+        pg.translate((float) getPosition().getX(), 2.0f, (float)getPosition().getY());
+        pg.rotateY((float) getRotation());
+        pg.fill(0xFFFFFFFF);
+        pg.beginShape(18);
+        for (int i = 0; i < 20; i++) {
+            pg.vertex(width/2.f, (float) Math.sin((Math.PI*2) / (i / 20.f)) * radius, (float) Math.cos((Math.PI*2) / (i / 20.f)) * radius);
+            pg.vertex(-width/2.f, (float) Math.sin((Math.PI*2) / (i / 20.f)) * radius, (float) Math.cos((Math.PI*2) / (i / 20.f)) * radius);
+        }
+        pg.endShape(2);
+        pg.popMatrix();
+    }
 
-//     public void setHeight(double height) {
-//         this.height = height;
-//     }
 
-//     public double getDepth() {
-//         return depth;
-//     }
 
-//     public void setDepth(double depth) {
-//         this.depth = depth;
-//     }
-    
-//     public double getVolume() {
-//         return width * height * depth;
-//     }
-    
-//     public double getSurfaceArea() {
-//         return 2 * (width * height + width * depth + height * depth);
-//     }
-    
-//     public void applyForce(PVector force) {
-//         PVector acceleration = PVector.div(force, (float) getWeight());
-//         setAcceleration(acceleration);
-//     }
-    
-//     public void applyImpulse(PVector impulse) {
-//         PVector velocity = PVector.div(impulse, (float) getWeight());
-//         setVelocity(velocity);
-//     }
 
-//     private void cylinderDraw(){
-        
-//     }
-    
-//     //public void applyTorque(float torque) {
-//     //    // Implement the logic for applying torque to the box here
-//     //}
-    
-//     //public void applyImpulseTorque(float impulseTorque) {
-//     //    // Implement the logic for applying impulse torque to the box
-//     //}
-// }
+
+}

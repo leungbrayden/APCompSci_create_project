@@ -61,6 +61,7 @@ public class Main extends PApplet{
         if (!keysHeld.contains(key)) {
             keysHeld.add(key);
         }
+        beginShape(QUAD_STRIP);
     }
 
     public void keyReleased() {

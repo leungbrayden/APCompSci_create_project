@@ -3,8 +3,6 @@ package create_project;
 import java.util.ArrayList;
 import java.util.List;
 
-import create_project.util.Constants;
-import create_project.util.Vector2D;
 import processing.core.PApplet;
 import processing.core.PGraphics;
 

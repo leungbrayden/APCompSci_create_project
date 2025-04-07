@@ -3,7 +3,6 @@ package create_project;
 import java.util.ArrayList;
 import java.util.List;
 
-import create_project.util.Vector2D;
 import processing.core.PGraphics;
 import processing.core.PVector;
 
@@ -17,7 +16,7 @@ public class GameInstance{
 
     private GameInstance() {
         gameObjects = new ArrayList<>();
-        Box floor = new Box(new PVector(0.f,-1.f,345.4375f + 20), Integer.MAX_VALUE, 317, 2, 690.875, 127);
+        Box floor = new Box(new PVector(0.f,-1.1f,345.4375f + 20), Integer.MAX_VALUE, 317, 2, 690.875, 127);
         floor.notCollidable();
         floor.setStatic(true);
         
@@ -26,7 +25,7 @@ public class GameInstance{
         gameObjects.add(robot);
         gameObjects.add(new Coral(new PVector(0.f, 0.f, 100.f + 20)));
 
-        gameObjects.add(new Box(new PVector(0.f,-1.f,345.4375f + 20), 20, 4.5, 12, 4.5, 0));
+        // gameObjects.add(new Box(new PVector(0.f,-1.f,345.4375f + 20), 20, 4.5, 12, 4.5, 0));
 
         float fieldWidth = 317;
         float fieldDepth = 690f;
@@ -78,20 +77,11 @@ public class GameInstance{
         graphics.background(50);
         graphics.camera(0.0f,72.0f,-24.0f, (float) robot.getPosition().getX(), 0.f, (float) robot.getPosition().getY(),
           0.0f, -1.0f, 0.0f);
+        graphics.perspective();
         graphics.noStroke();
         graphics.pushMatrix();
-        graphics.translate(0f, 0f, (float) robot.getPosition().getY()); 
-        // graphics.rotateY(0.5f);
-        // graphics.noFill();
-        // graphics.box(50, 20, 50);
+        graphics.translate(0f, 0f, (float) robot.getPosition().getY());
         graphics.popMatrix();
-
-        // graphics.pushMatrix();
-        // graphics.fill(0xFFFF0000);
-        // graphics.translate((float) robot.getPosition().getX(), 0.f, (float) robot.getPosition().getY());
-        // // pg.rotateY((float) getRotation());
-        // graphics.box((float) 30, (float) 30, (float) 30);
-        // graphics.popMatrix();
 
         robot.draw(graphics);
         for (GameObject gameObject : gameObjects) {

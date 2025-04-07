@@ -1,6 +1,5 @@
 package create_project;
 
-import create_project.util.Vector2D;
 import processing.core.PApplet;
 import processing.core.PGraphics;
 import processing.core.PShape;

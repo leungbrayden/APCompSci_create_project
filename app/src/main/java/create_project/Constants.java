@@ -1,4 +1,4 @@
-package create_project.util;
+package create_project;
 
 
 public final class Constants {

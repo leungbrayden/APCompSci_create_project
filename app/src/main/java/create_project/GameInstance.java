@@ -20,6 +20,7 @@ public class GameInstance{
             new Box(new PVector(0.f,-1.f,345.4375f + 20), Integer.MAX_VALUE, 317, 2, 690.875, 127)
             .disableCollision());
         robot = new Robot(true, 1234);
+        gameObjects.add(robot);
 
         //gameObjects.add(new Box(new PVector(0.f,-1.f,345.4375f + 20), 20, 4.5, 12, 4.5, 0));
 
@@ -43,6 +44,10 @@ public class GameInstance{
     
     public void moveRobot(PVector direction) {
         robot.move(direction);
+    }
+
+    public void stopRobot() {
+        robot.stop();
     }
 
     public void reset() {
@@ -69,6 +74,7 @@ public class GameInstance{
         graphics.noStroke();
         robot.draw(graphics);
         for (GameObject gameObject : gameObjects) {
+            gameObject.update();
             gameObject.draw(graphics);
         }
         graphics.lights();

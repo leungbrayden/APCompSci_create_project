@@ -20,6 +20,7 @@ public class Box extends GameObject{
             new Vertex(-width*0.5, -depth*0.5), 
             new Vertex(width*0.5 , -depth*0.5));
         this.colour = colour;
+        this.weight = weight;
     }
 
     public void draw(PGraphics pg) {
@@ -31,6 +32,7 @@ public class Box extends GameObject{
     }
 
     public Box disableCollision() {
+        this.setCollidable(false);
         this.setVertices();
         return this;
     }

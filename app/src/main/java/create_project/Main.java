@@ -46,6 +46,10 @@ public class Main extends PApplet{
         if (keysHeld.contains('d')) {
             movement.add(1, 0, 0);
         }
+        if (movement.equals(new PVector(0, 0, 0))) {
+            GameInstance.getInstance().stopRobot();
+            return;
+        }
         GameInstance.getInstance().moveRobot(movement.normalize());
     }
 

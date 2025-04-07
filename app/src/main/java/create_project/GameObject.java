@@ -339,8 +339,4 @@ public class GameObject {
     public boolean isVisible() {
         return isVisible;
     }
-
-    public boolean isStatic() {
-        return isStatic;
-    }
 }

@@ -18,6 +18,9 @@ public class GameInstance{
 
     private PShape reef;
 
+    private int[] levelPointAuto = {3,4,6,7,6,4};
+    private int[] levelPointTele = {2,3,4,5,6,4};
+
     private GameInstance() {
         gameObjects = new ArrayList<>();
         Box floor = new Box(new PVector(0.f,-1.1f,345.4375f + 20), 10, 317, 2, 690.875, 200);
@@ -81,7 +84,7 @@ public class GameInstance{
 
         Logger.init(graphics);
 
-        String dataDir = System.getenv("DATA_PATH");
+        String dataDir = "C:\\Users\\zhish\\Documents\\APCompSci_create_project\\app\\src\\main\\java\\create_project\\data\\";
 
         if (dataDir == null) {
             System.out.println("DATA_PATH not set, ");
@@ -132,7 +135,17 @@ public class GameInstance{
         return graphics;
     }
 
+    private void theFunctionThatCountsForYou(int points){
+        
+    }
+
     public void drawHUD(PApplet app) {
+        app.fill(0,0,255);
+        app.rect(100,0,900,100);
+        app.fill(255,0,0);
+        app.rect(100, 0, 450, 100);
+        //starts in drawHud
+        // app.text(theFunctionThatCountsForYou(points));dds
 
     }
 

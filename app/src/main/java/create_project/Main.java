@@ -7,7 +7,7 @@ import java.util.List;
 import processing.core.PApplet;
 
 public class Main extends PApplet{
-
+    private boolean gameStart = true;
     public void settings(){
         size(1080, 720, P2D);
     }
@@ -23,10 +23,12 @@ public class Main extends PApplet{
 
     public void draw(){
         handleMovement();
+        if (gameStart){
         GameInstance.getInstance().draw();
         image(GameInstance.getInstance().getGraphics(), 0, 0);
         GameInstance.getInstance().drawHUD(this);
     }
+}
 
     public void mousePressed(){
 
@@ -79,4 +81,5 @@ public class Main extends PApplet{
 		Main app = new Main();
 		PApplet.runSketch(processingArgs, app);
 	}
+
 }

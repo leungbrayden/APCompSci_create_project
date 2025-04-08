@@ -3,7 +3,6 @@ package create_project;
 import java.util.ArrayList;
 import java.util.List;
 
-import processing.core.PApplet;
 import processing.core.PGraphics;
 import processing.core.PVector;
 
@@ -33,7 +32,7 @@ public class GameObject {
         this.friction = .001;
         this.inertia = 10.0; // Assuming a simple shape for inertia calculation
         this.collidable = true; // Default to collidable
-        if (mass == 0) {
+        if (this.mass == 0) {
             this.invMass = 0;
             this.invInertia = 0;
             this.inertia = 0;

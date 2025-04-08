@@ -114,12 +114,12 @@ public class GameInstance{
             gameObject.update();
             gameObject.draw(graphics);
         }
-        // if (reef != null) {
-        //     graphics.pushMatrix();
-        //     graphics.translate(0, 0, 100);
-        //     graphics.shape(reef);
-        //     graphics.popMatrix();
-        // }
+        if (reef != null) {
+            graphics.pushMatrix();
+            graphics.translate(0, 0, 100);
+            graphics.shape(reef);
+            graphics.popMatrix();
+        }
         graphics.endDraw();
     }
 

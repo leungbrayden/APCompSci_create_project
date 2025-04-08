@@ -44,7 +44,7 @@ public class GameInstance{
 
         // sample rotation constructor: 
         for (int i = 0; i > 6; i++){
-        reefAngle = i * Math.PI/3;
+        reefAngle = (float) (i * Math.PI/3);
         gameObjects.add(new Box(new PVector(0.f,0.f,0.f), 20, 4.5, 12, 4.5, 0, (float) Math.PI/3));
     }
     }

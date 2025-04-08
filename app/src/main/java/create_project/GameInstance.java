@@ -5,6 +5,7 @@ import java.util.List;
 
 import processing.core.PApplet;
 import processing.core.PGraphics;
+import processing.core.PShape;
 import processing.core.PVector;
 
 public class GameInstance{
@@ -15,9 +16,11 @@ public class GameInstance{
 
     private PGraphics graphics;
 
+    private PShape reef;
+
     private GameInstance() {
         gameObjects = new ArrayList<>();
-        Box floor = new Box(new PVector(0.f,-1.1f,345.4375f + 20), Integer.MAX_VALUE, 317, 2, 690.875, 127);
+        Box floor = new Box(new PVector(0.f,-1.1f,345.4375f + 20), 10, 317, 2, 690.875, 200);
         floor.notCollidable();
         floor.setStatic(true);
         
@@ -34,10 +37,10 @@ public class GameInstance{
         float wallHeight = 50;
         float reefAngle;
 
-        gameObjects.add(new Box(new PVector(0,0.f,fieldDepth), Integer.MAX_VALUE, fieldWidth, 40, 10,255).isStatic()); 
-        gameObjects.add(new Box(new PVector(0,0.f, 20), Integer.MAX_VALUE, fieldWidth, 20, 20,255).isStatic()); 
-        gameObjects.add(new Box(new PVector(-fieldWidth/2,0.f,(fieldDepth/2)+5), Integer.MAX_VALUE, 10, 40, fieldDepth-25, 255).isStatic());
-        gameObjects.add(new Box(new PVector(fieldWidth/2,0.f, (fieldDepth/2)+5), Integer.MAX_VALUE, 10, 40, fieldDepth-25, 255).isStatic());
+        gameObjects.add(new Box(new PVector(0,0.f,fieldDepth), 0, fieldWidth, 40, 10,0x55FFFFFF).isStatic()); 
+        gameObjects.add(new Box(new PVector(0,0.f, 0), 0, fieldWidth, 40, 20,0x55FFFFFF).isStatic()); 
+        gameObjects.add(new Box(new PVector(-fieldWidth/2,0.f,(fieldDepth/2)+5), 0, 10, 40, fieldDepth-25, 0x55FFFFFF).isStatic());
+        gameObjects.add(new Box(new PVector(fieldWidth/2,0.f, (fieldDepth/2)+5), 0, 10, 40, fieldDepth-25, 0x55FFFFFF).isStatic());
 
         // sample rotation constructor: 
         for (int i = 0; i > 6; i++){
@@ -56,6 +59,10 @@ public class GameInstance{
     public void moveRobot(Vector2D direction) {
         robot.move(direction);
     }
+
+    public void startElevator() {
+        robot.startElevator();
+    }
     
     public void rotateRobot(float angle) {
         robot.setAngularVelocity(angle);
@@ -64,11 +71,31 @@ public class GameInstance{
     public void reset() {
         instance = new GameInstance();
     }
-
+    /**
+     *  sets graphics object for the game instance and initializes objects that require it
+     *  @param graphics the graphics object to set
+     */
     public void setGraphics(PGraphics graphics) {
-        Logger.init(graphics);
         this.graphics = graphics;
-        graphics.fill(255);
+
+
+        Logger.init(graphics);
+
+        String dataDir = System.getenv("DATA_PATH");
+
+        if (dataDir == null) {
+            System.out.println("DATA_PATH not set, ");
+            System.out.println("    macos/linux: export DATA_PATH=/path/to/data");
+            System.out.println("    windows: set DATA_PATH=C:\\path\\to\\data");
+            System.exit(1);
+        }
+
+        try {
+            reef = graphics.loadShape(dataDir+"REEF.obj");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        reef.scale((float)(39.37 / 1.196));
     }
 
     public void draw() {
@@ -81,20 +108,22 @@ public class GameInstance{
         }
         graphics.beginDraw();
         graphics.background(50);
-        graphics.camera(0.0f,72.0f,-24.0f, (float) robot.getPosition().getX(), 0.f, (float) robot.getPosition().getY(),
+        graphics.camera(0.0f,72.0f,-64.0f, (float) robot.getPosition().getX(), 0.f, (float) robot.getPosition().getY(),
           0.0f, -1.0f, 0.0f);
         graphics.perspective();
         graphics.noStroke();
-        graphics.pushMatrix();
-        graphics.translate(0f, 0f, (float) robot.getPosition().getY());
-        graphics.popMatrix();
 
-        robot.draw(graphics);
+
         for (GameObject gameObject : gameObjects) {
             gameObject.update();
             gameObject.draw(graphics);
         }
-        graphics.lights();
+        if (reef != null) {
+            graphics.pushMatrix();
+            graphics.translate(0, 0, 100);
+            graphics.shape(reef);
+            graphics.popMatrix();
+        }
         graphics.endDraw();
     }
 
@@ -105,5 +134,10 @@ public class GameInstance{
 
     public void drawHUD(PApplet app) {
 
+    }
+
+    public void createCoral() {
+        Coral coral = new Coral(new PVector(0.f, 70.f, 50.f));
+        gameObjects.add(coral);
     }
 }

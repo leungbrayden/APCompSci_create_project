@@ -10,7 +10,7 @@ import processing.core.PVector;
 public class GameObject {
     private Vector2D position, velocity, acceleration;
     private double rotation, angularVelocity, angularAcceleration;
-    private double mass, inertia, restitution, friction;
+    private double mass, inertia, restitution, friction, invMass, invInertia;
     private boolean isStatic, isVisible, isCollidable, collidable;
     private Vector2D[] vertices;
 
@@ -33,6 +33,14 @@ public class GameObject {
         this.friction = .001;
         this.inertia = 10.0; // Assuming a simple shape for inertia calculation
         this.collidable = true; // Default to collidable
+        if (mass == 0) {
+            this.invMass = 0;
+            this.invInertia = 0;
+            this.inertia = 0;
+            return;
+        }
+        this.invMass = 1.0 / mass;
+        this.invInertia = 1.0 / inertia;
     }
 
     public GameObject(Vector2D[] vertices) {
@@ -200,16 +208,16 @@ public class GameObject {
         // Calculate impulse scalar
         double raCrossN = Vector2D.cross(ra,collisionNormal);
         double rbCrossN = Vector2D.cross(rb,collisionNormal);
-        double invMassSum =  (1. / this.mass) + (1. / other.mass) + 
-                            (raCrossN * raCrossN) *  (1. / this.inertia)+ 
-                            (rbCrossN * rbCrossN) * (1. / other.inertia);
+        double invMassSum =  this.invMass + other.invMass + 
+                            (raCrossN * raCrossN) *  this.invInertia+ 
+                            (rbCrossN * rbCrossN) * other.invInertia;
 
         double j = -(1 + e) * velAlongNormal / invMassSum;
 
         // Impulse
         Vector2D impulse = Vector2D.mult(collisionNormal,(double)j);
-        this.applyImpulse(Vector2D.mult(impulse,-1.), ra);
-        other.applyImpulse(impulse, rb);
+        this.applyImpulse(Vector2D.mult(impulse,-1.), ra, other.invMass);
+        other.applyImpulse(impulse, rb, this.invMass);
 
         // --- Friction ---
         rv = Vector2D.sub(Vector2D.add(other.velocity,Vector2D.mult(rb.perpendicular(), (other.angularVelocity))),
@@ -227,21 +235,22 @@ public class GameObject {
             frictionImpulse = Vector2D.mult(tangent, (-j * mu));
         }
 
-        this.applyImpulse(Vector2D.mult(frictionImpulse,-1.), ra);
-        other.applyImpulse(frictionImpulse, rb);
+        this.applyImpulse(Vector2D.mult(frictionImpulse,-1.), ra, other.invMass);
+        other.applyImpulse(frictionImpulse, rb, this.invMass);
 
         // Positional correction to avoid sinking
-        final double percent = 0.6; // 20% of penetration
-        final double slop = 0.01;
-        Vector2D correction = Vector2D.mult(collisionNormal, (Math.max(minOverlap - slop, 0.0) / ((1./this.mass) + (1./other.mass)) * percent));
-        this.setPosition(Vector2D.sub(this.position,Vector2D.mult(correction,(1./this.mass))));
-        other.setPosition(Vector2D.add(other.position,Vector2D.mult(correction,(1./other.mass))));
+        final double percent = 0.2; // 20% of penetration
+        final double slop = 0.1;
+        Vector2D correction = Vector2D.mult(collisionNormal, 
+            (Math.max(minOverlap - slop, 0.0) / (this.invMass + other.invMass) * percent));
+        this.setPosition(Vector2D.sub(this.position,Vector2D.mult(correction,this.invMass)));
+        other.setPosition(Vector2D.add(other.position,Vector2D.mult(correction,other.invMass)));
 
         // Logger.recordPoint(contactPoint, 0xCCFF0000);
         Logger.recordVector(Vector2D.mult(collisionNormal,100.f), 
             new PVector((float) contactPoint.getX(), 0.f, (float) contactPoint.getY()), 0xFF00FFFF);
-        this.collidable = false;
-        other.collidable = false;
+        // this.collidable = false;
+        // other.collidable = false;
     }
 
     public void update() {
@@ -250,12 +259,12 @@ public class GameObject {
             // postion updates
             position.add(Vector2D.mult(velocity, Constants.deltaTime));
             velocity.add(Vector2D.mult(acceleration, Constants.deltaTime));
-            this.setRotation(rotation + angularVelocity * Constants.deltaTime);
+            this.setRotation(rotation + (angularVelocity * Constants.deltaTime));
             this.angularVelocity += angularAcceleration * Constants.deltaTime;
 
             // friction
             velocity.scale(0.99);
-            this.angularVelocity = this.angularVelocity * 0.99;
+            this.angularVelocity *= 0.99;
 
         }
     }
@@ -290,6 +299,9 @@ public class GameObject {
     public void setAcceleration(Vector2D acceleration) {
         this.acceleration = acceleration;
     }
+    public void addAcceleration(Vector2D acceleration) {
+        this.acceleration.add(acceleration);
+    }
     public Vector2D getAcceleration() {
         return acceleration;
     }
@@ -315,9 +327,15 @@ public class GameObject {
         return vertices;
     }
 
-    public void applyImpulse(Vector2D impulse, Vector2D point) {
-        this.velocity.add(Vector2D.mult(impulse, (1./this.mass)));
-        this.angularVelocity += Vector2D.cross(point,impulse) / this.inertia;
+    public void applyImpulse(Vector2D impulse, Vector2D point, double otherInvMass) {
+        // Before applying angular velocity
+        double angularImpulse = Vector2D.cross(point,impulse);
+        if (otherInvMass == 0) angularImpulse *= 0.5; // soften static collision
+        this.angularVelocity += invInertia * angularImpulse;
+
+        // Clamp
+        this.angularVelocity = Math.max(-10, Math.min(angularVelocity, 10));
+        this.velocity.add(Vector2D.mult(impulse, this.getInvMass()));
     }
 
     public void notCollidable() {
@@ -338,5 +356,17 @@ public class GameObject {
 
     public boolean isVisible() {
         return isVisible;
+    }
+
+    public boolean getStatic() {
+        return isStatic;
+    }
+
+    public double getInvMass() {
+        return invMass;
+    }
+    
+    public void setVertices(Vector2D[] vertices) {
+        this.vertices = vertices;
     }
 }

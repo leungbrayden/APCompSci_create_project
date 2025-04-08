@@ -24,12 +24,8 @@ public class Coral extends GameObject{
 
     @Override
     public void update() {
-        super.update();
-        if (isStatic()) {
-            return;
-        }
-        
-    }
+        super.update();}
+
 
     @Override
     public void draw(PGraphics pg) {

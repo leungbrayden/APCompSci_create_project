@@ -32,14 +32,18 @@ public class GameInstance{
         float fieldDepth = 690f;
         float wallThickness = 2;
         float wallHeight = 50;
+        float reefAngle;
 
-        gameObjects.add(new Box(new PVector(0,-1.f,fieldDepth), Integer.MAX_VALUE, fieldWidth, 40, 10,255).isStatic()); 
-        gameObjects.add(new Box(new PVector(0,-1.f, 20), Integer.MAX_VALUE, fieldWidth, 20, 20,255).isStatic()); 
+        gameObjects.add(new Box(new PVector(0,0.f,fieldDepth), Integer.MAX_VALUE, fieldWidth, 40, 10,255).isStatic()); 
+        gameObjects.add(new Box(new PVector(0,0.f, 20), Integer.MAX_VALUE, fieldWidth, 20, 20,255).isStatic()); 
         gameObjects.add(new Box(new PVector(-fieldWidth/2,0.f,(fieldDepth/2)+5), Integer.MAX_VALUE, 10, 40, fieldDepth-25, 255).isStatic());
-        gameObjects.add(new Box(new PVector(fieldWidth/2,0.f, fieldDepth/2+5), Integer.MAX_VALUE, 10, 40, fieldDepth-25, 255).isStatic());
+        gameObjects.add(new Box(new PVector(fieldWidth/2,0.f, (fieldDepth/2)+5), Integer.MAX_VALUE, 10, 40, fieldDepth-25, 255).isStatic());
 
         // sample rotation constructor: 
-        // gameObjects.add(new Box(new PVector(0.f,0.f,0.f), 20, 4.5, 12, 4.5, 0, (float) Math.PI/2));
+        for (int i = 0; i > 6; i++){
+        reefAngle = i * Math.PI/3;
+        gameObjects.add(new Box(new PVector(0.f,0.f,0.f), 20, 4.5, 12, 4.5, 0, (float) Math.PI/3));
+    }
     }
 
     public static GameInstance getInstance() {

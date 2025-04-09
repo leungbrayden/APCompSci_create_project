@@ -70,4 +70,8 @@ public class Vector3D {
     public static Vector3D lerp(Vector3D a, Vector3D b, double t) {
         return a.add(b.sub(a).scale(t));
     }
+
+    public double magnitude() {
+        return Math.sqrt(x * x + y * y + z * z);
+    }
 }

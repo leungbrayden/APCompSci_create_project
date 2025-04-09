@@ -22,15 +22,13 @@ public class TestPhysics extends PApplet {
         lights();
         for (GameObject3D obj : gameObjects) {
             obj.update();
-            obj.draw(this);
+            // obj.draw(this);
             for (GameObject3D other : gameObjects) {
                 if (obj != other) {
                     obj.resolveCollision(other);
                 }
             }
         }
-
-
     }
 
     public void keyPressed() {

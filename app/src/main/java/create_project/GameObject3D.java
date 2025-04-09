@@ -7,22 +7,27 @@ import java.util.List;
 import java.util.Set;
 
 import processing.core.PApplet;
+import processing.core.PGraphics;
 
 
 public class GameObject3D {
+    // physics properties
     private Vector3D position, velocity, acceleration;
     private Quaternion orientation;
     private Vector3D angularVelocity, angularAcceleration;
     private double mass, restitution, friction, invMass;
     private Matrix3x3 inertiaTensor, invInertiaTensor;
-    private boolean isStatic, isVisible, isCollidable;
+    private boolean isStatic, isVisible, isCollidable, isGravityEnabled;
     private List<Vector3D> localVertices;
     private List<int[]> edges;
     private List<int[]> faces;
 
+    // visual properties
+    private int color;
+
     public GameObject3D(Vector3D position, Vector3D velocity, Vector3D acceleration,
                         Quaternion orientation, Vector3D angularVelocity, Vector3D angularAcceleration,
-                        double mass, boolean isStatic, boolean isVisible, List<Vector3D> vertices) {
+                        double mass, boolean isStatic, boolean isVisible, List<Vector3D> vertices, int color) {
 
         this.position = position;
         this.velocity = velocity;
@@ -36,10 +41,11 @@ public class GameObject3D {
         this.localVertices = vertices;
         this.edges = computeEdges(vertices);
         this.faces = computeBoxFaces();
+        this.color = color;
 
         this.isCollidable = true;
-        this.restitution = 0.9;
-        this.friction = 0.001;
+        this.restitution = 0.4;
+        this.friction = 0.6;
 
         if (mass == 0 || isStatic) {
             invMass = 0;
@@ -52,7 +58,26 @@ public class GameObject3D {
         }
     }
 
-    public static GameObject3D createBox(Vector3D position, double width, double height, double depth, double mass) {
+    public GameObject3D(List<Vector3D> vertices, Vector3D position, double mass, int color) {
+        this(position, new Vector3D(), new Vector3D(),
+             Quaternion.identity(), new Vector3D(), new Vector3D(),
+             mass, false, true, vertices, color);
+    }
+
+    public static List<Vector3D> createBoxVertices(double width, double height, double depth) {
+        return Arrays.asList(
+            new Vector3D( width/2,  height/2,  depth/2),
+            new Vector3D(-width/2,  height/2,  depth/2),
+            new Vector3D(-width/2, -height/2,  depth/2),
+            new Vector3D( width/2, -height/2,  depth/2),
+            new Vector3D( width/2,  height/2, -depth/2),
+            new Vector3D(-width/2,  height/2, -depth/2),
+            new Vector3D(-width/2, -height/2, -depth/2),
+            new Vector3D( width/2, -height/2, -depth/2)
+        );
+    }
+
+    public static GameObject3D createBox(Vector3D position, double width, double height, double depth, double mass, int color) {
         List<Vector3D> vertices = Arrays.asList(
             new Vector3D( width/2,  height/2,  depth/2),
             new Vector3D(-width/2,  height/2,  depth/2),
@@ -65,7 +90,11 @@ public class GameObject3D {
         );
         return new GameObject3D(position, new Vector3D(), new Vector3D(),
                                 Quaternion.identity(), new Vector3D(), new Vector3D(),
-                                mass, mass == 0, true, vertices);
+                                mass, mass == 0, true, vertices, color);
+    }
+
+    public static GameObject3D createBox(Vector3D position, double width, double height, double depth, double mass) {
+        return createBox(position, width, height, depth, mass, 0xFFFFFFFF);
     }
 
     private List<int[]> computeBoxFaces() {
@@ -235,6 +264,31 @@ public class GameObject3D {
         return closestA != null ? closestA : this.position;
     }
 
+    public List<Vector3D> getContactPoints(GameObject3D other, Vector3D collisionNormal) {
+        List<Vector3D> contacts = new ArrayList<>();
+        double contactThreshold = 50.;
+
+        List<Vector3D> vertsA = this.getWorldVertices();
+        List<Vector3D> vertsB = other.getWorldVertices();
+
+        for (Vector3D va : vertsA) {
+            for (Vector3D vb : vertsB) {
+                Vector3D delta = va.sub(vb);
+                double separation = Math.abs(delta.dot(collisionNormal));
+                if (separation < contactThreshold) {
+                    contacts.add(va.add(vb).scale(0.5));
+                }
+            }
+        }
+
+        if (contacts.isEmpty()) {
+            contacts.add(this.getContactPoint(other));
+        }
+
+        return contacts;
+    }
+
+
     public Vector3D getPosition() { return position; }
     public void setPosition(Vector3D pos) { this.position = pos; }
     public Vector3D getVelocity() { return velocity; }
@@ -249,6 +303,11 @@ public class GameObject3D {
     public boolean isVisible() { return isVisible; }
     public boolean isCollidable() { return isCollidable; }
     public List<Vector3D> getLocalVertices() { return localVertices; }
+    // chain methods
+    public GameObject3D setCollidable(boolean collidable) { this.isCollidable = collidable; return this;}
+    public GameObject3D setStatic(boolean isStatic) { this.isStatic = isStatic; return this; }
+    public GameObject3D setVisible(boolean isVisible) { this.isVisible = isVisible; return this; }
+    public GameObject3D setGravityEnabled(boolean isGravityEnabled) { this.isGravityEnabled = isGravityEnabled; return this; }
 
     public Matrix3x3 getInertiaTensorWorld() {
         Matrix3x3 rot = orientation.toMatrix();
@@ -258,6 +317,10 @@ public class GameObject3D {
     public void update() {
         if (isStatic) return;
 
+        if (isGravityEnabled) {
+            if (position.y > 0) 
+                velocity = velocity.add(new Vector3D(0, -100, 0).scale(Constants.deltaTime));
+        }
         velocity = velocity.add(acceleration.scale(Constants.deltaTime));
         position = position.add(velocity.scale(Constants.deltaTime));
 
@@ -267,92 +330,89 @@ public class GameObject3D {
         orientation = orientation.add(deltaOrientation).normalize();
 
         velocity = velocity.scale(0.99);
-        angularVelocity = angularVelocity.scale(0.99);
+        angularVelocity = angularVelocity.scale(0.95);
+        if (angularVelocity.length() < 0.05) {
+            angularVelocity = new Vector3D();
+        }
     }
 
     public void resolveCollision(GameObject3D other) {
         CollisionInfo collisionInfo = this.checkCollision(other);
+        if (!collisionInfo.isColliding || !this.isCollidable || !other.isCollidable) return;
 
-        if (!collisionInfo.isColliding) {
-            return;
-        }
-
-        if (!this.isCollidable || !other.isCollidable) {
-            return;
-        }
-
-        Vector3D contactPoint = this.getContactPoint(other);
-        Vector3D ra = contactPoint.sub(this.position);
-        Vector3D rb = contactPoint.sub(other.position);
-
-        Vector3D velA = this.velocity.add(this.angularVelocity.cross(ra));
-        Vector3D velB = other.velocity.add(other.angularVelocity.cross(rb));
-        Vector3D rv = velB.sub(velA);
-
-        Vector3D normal = collisionInfo.normal;
-        double velAlongNormal = rv.dot(normal);
-        if (velAlongNormal > 0) {
-            return;
-        }
-
-        double e = Math.min(this.restitution, other.restitution);
-
+        List<Vector3D> contactPoints = this.getContactPoints(other, collisionInfo.normal);
         Matrix3x3 invInertiaA = this.getInertiaTensorWorld();
         Matrix3x3 invInertiaB = other.getInertiaTensorWorld();
-
-        Vector3D raCrossN = ra.cross(normal);
-        Vector3D rbCrossN = rb.cross(normal);
-
-        double invMassSum = this.invMass + other.invMass
-            + normal.dot(invInertiaA.multiply(raCrossN).cross(ra))
-            + normal.dot(invInertiaB.multiply(rbCrossN).cross(rb));
-
-        double j = -(1 + e) * velAlongNormal / invMassSum;
-        Vector3D impulse = normal.scale(j);
-
-        applyImpulse(impulse.scale(-1), ra);
-        other.applyImpulse(impulse, rb);
-
-        // --- Friction ---
-        velA = this.velocity.add(this.angularVelocity.cross(ra));
-        velB = other.velocity.add(other.angularVelocity.cross(rb));
-        rv = velB.sub(velA);
-
-        Vector3D tangent = rv.sub(normal.scale(rv.dot(normal))).normalize();
-        double jt = -rv.dot(tangent) / invMassSum;
-
+        double e = Math.min(this.restitution, other.restitution);
         double mu = Math.sqrt(this.friction * other.friction);
-        Vector3D frictionImpulse;
-        if (Math.abs(jt) < j * mu) {
-            frictionImpulse = tangent.scale(jt);
-        } else {
-            frictionImpulse = tangent.scale(-j * mu);
+
+        for (Vector3D contactPoint : contactPoints) {
+            Vector3D ra = contactPoint.sub(this.position);
+            Vector3D rb = contactPoint.sub(other.position);
+
+            Vector3D velA = this.velocity.add(this.angularVelocity.cross(ra));
+            Vector3D velB = other.velocity.add(other.angularVelocity.cross(rb));
+            Vector3D rv = velB.sub(velA);
+
+            double velAlongNormal = rv.dot(collisionInfo.normal);
+            if (velAlongNormal > 0) continue;
+
+            Vector3D raCrossN = ra.cross(collisionInfo.normal);
+            Vector3D rbCrossN = rb.cross(collisionInfo.normal);
+
+            double invMassSum = this.invMass + other.invMass
+                + collisionInfo.normal.dot(invInertiaA.multiply(raCrossN).cross(ra))
+                + collisionInfo.normal.dot(invInertiaB.multiply(rbCrossN).cross(rb));
+
+            double j = -(1 + e) * velAlongNormal / invMassSum / contactPoints.size();
+            Vector3D impulse = collisionInfo.normal.scale(j);
+
+            applyImpulse(impulse.scale(-1), ra);
+            other.applyImpulse(impulse, rb);
+
+            // Friction
+            velA = this.velocity.add(this.angularVelocity.cross(ra));
+            velB = other.velocity.add(other.angularVelocity.cross(rb));
+            rv = velB.sub(velA);
+
+            Vector3D tangent = rv.sub(collisionInfo.normal.scale(rv.dot(collisionInfo.normal))).normalize();
+            double jt = -rv.dot(tangent) / invMassSum / contactPoints.size();
+
+            Vector3D frictionImpulse = Math.abs(jt) < j * mu ? tangent.scale(jt) : tangent.scale(-j * mu);
+            applyImpulse(frictionImpulse.scale(-1), ra);
+            other.applyImpulse(frictionImpulse, rb);
         }
 
-        applyImpulse(frictionImpulse.scale(-1), ra);
-        other.applyImpulse(frictionImpulse, rb);
-
-        // --- Positional Correction ---
-        final double percent = 0.2;
-        final double slop = 0.01;
-        double penetration = collisionInfo.penetration;
-        Vector3D correction = normal.scale(Math.max(penetration - slop, 0.0) / (this.invMass + other.invMass) * percent);
+        // Positional correction
+        final double percent = 1.2;
+        final double slop = 0;
+        double correctionMagnitude = Math.max(collisionInfo.penetration - slop, 0.0) / (this.invMass + other.invMass) * percent;
+        Vector3D correction = collisionInfo.normal.scale(correctionMagnitude);
         if (!this.isStatic) this.position = this.position.sub(correction.scale(this.invMass));
         if (!other.isStatic) other.position = other.position.add(correction.scale(other.invMass));
     }
 
     public void applyImpulse(Vector3D impulse, Vector3D contactVector) {
-        System.out.println("Applying impulse: " + impulse + " at contact vector: " + contactVector);
+        // System.out.println("Applying impulse: " + impulse + " at contact vector: " + contactVector);
         if (invMass == 0) return;
         this.velocity = this.velocity.add(impulse.scale(invMass));
         Vector3D torque = contactVector.cross(impulse);
         this.angularVelocity = this.angularVelocity.add(this.getInertiaTensorWorld().multiply(torque));
+        // After updating angularVelocity
+        double maxAngularSpeed = 0.1; // radians per second
+        angularVelocity.x = Math.max(-maxAngularSpeed, Math.min(maxAngularSpeed, angularVelocity.x));
+        angularVelocity.y = Math.max(-maxAngularSpeed, Math.min(maxAngularSpeed, angularVelocity.y));
+        angularVelocity.z = Math.max(-maxAngularSpeed, Math.min(maxAngularSpeed, angularVelocity.z));
     }
 
-    public void draw(PApplet p) {
+    public void draw(PGraphics p) {
+        System.out.println("rotation: " + this.orientation);
+        System.out.println("angular velocity: " + this.angularVelocity);
+        System.out.println("angular acceleration: " + this.angularAcceleration);
         if (!isVisible) return;
 
         p.pushMatrix();
+        p.fill(color);
         p.translate((float)this.getPosition().x, (float)this.getPosition().y, (float)this.getPosition().z);
         double[] ypr = this.orientation.toYawPitchRoll();
         p.rotateZ((float) ypr[0]); // Yaw

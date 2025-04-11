@@ -11,11 +11,15 @@ public class MotionProfile {
     private boolean isMoving = false;
 
     public MotionProfile(double startPos, double endPos, double maxVel, double maxAccel) {
-        this.startPos = startPos;
-        this.endPos = endPos;
         this.maxVel = maxVel;
         this.maxAccel = maxAccel;
 
+        reset(startPos, endPos);
+    }
+
+    public void reset(double startPos, double endPos) {
+        this.startPos = startPos;
+        this.endPos = endPos;
         double distance = endPos - startPos;
         direction = Math.signum(distance);
         distance = Math.abs(distance);
@@ -41,7 +45,6 @@ public class MotionProfile {
         decelDist = accelDist;
         totalTime = accelTime + cruiseTime + decelTime;
     }
-
     
 
     public double getTotalTime() {
@@ -79,6 +82,7 @@ public class MotionProfile {
     }
 
     public void start() {
+        time = 0;
         isMoving = true;
     }
 

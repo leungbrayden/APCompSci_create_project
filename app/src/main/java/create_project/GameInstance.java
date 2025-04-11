@@ -12,7 +12,10 @@ public class GameInstance{
     private static GameInstance instance = null;
     private List<GameObject> gameObjects;
 
+    private List<Coral> corals;
+
     private Robot robot;
+    private Reef blueReef;
 
     private PGraphics graphics;
 
@@ -21,29 +24,37 @@ public class GameInstance{
     private int[] levelPointAuto = {3,4,6,7,6,4};
     private int[] levelPointTele = {2,3,4,5,6,4};
 
+    private final float fieldWidth = 317;
+    private final float fieldDepth = 690f;
+    private final float wallThickness = 2;
+    private final float wallHeight = 50;
+    private float reefAngle;
+
+
     private GameInstance() {
         gameObjects = new ArrayList<>();
-        Box floor = new Box(new PVector(0.f,-1.1f,345.4375f + 20), 10, 317, 2, 690.875, 200);
+        corals = new ArrayList<>();
+        Box floor = new Box(new PVector(0.f,-1.1f,fieldDepth/2.f), 10, 317, 2, 690.875, 200);
         floor.notCollidable();
         floor.setStatic(true);
         
         gameObjects.add(floor);
         robot = new Robot(true, 1234);
-        gameObjects.add(robot);
-        gameObjects.add(new Coral(new PVector(0.f, 2.25f, 100.f + 20)));
+        gameObjects.add(robot.withElasticity(0.4));
+        var coral = new Coral(new PVector(0.f, 2.25f, 100.f + 20));
+        gameObjects.add(coral.withElasticity(0.1));
+        corals.add(coral);        
+        
+
+        blueReef = new Reef(false);
+        gameObjects.add(blueReef.withElasticity(0.1));
 
         // gameObjects.add(new Box(new PVector(0.f,-1.f,345.4375f + 20), 20, 4.5, 12, 4.5, 0));
 
-        float fieldWidth = 317;
-        float fieldDepth = 690f;
-        float wallThickness = 2;
-        float wallHeight = 50;
-        float reefAngle;
-
-        gameObjects.add(new Box(new PVector(0,0.f,fieldDepth), 0, fieldWidth, 40, 10,0x55FFFFFF).isStatic()); 
-        gameObjects.add(new Box(new PVector(0,0.f, 0), 0, fieldWidth, 40, 20,0x55FFFFFF).isStatic()); 
-        gameObjects.add(new Box(new PVector(-fieldWidth/2,0.f,(fieldDepth/2)+5), 0, 10, 40, fieldDepth-25, 0x55FFFFFF).isStatic());
-        gameObjects.add(new Box(new PVector(fieldWidth/2,0.f, (fieldDepth/2)+5), 0, 10, 40, fieldDepth-25, 0x55FFFFFF).isStatic());
+        gameObjects.add(new Box(new PVector(0,0.f,fieldDepth), 0, fieldWidth, 40, 10,0x55FFFFFF).isStatic().withElasticity(0.8)); 
+        gameObjects.add(new Box(new PVector(0,0.f, 0), 0, fieldWidth, 40, 20,0x55FFFFFF).isStatic().withElasticity(0.8)); 
+        gameObjects.add(new Box(new PVector(-fieldWidth/2,0.f,(fieldDepth/2)), 0, 10, 40, fieldDepth, 0x55FFFFFF).isStatic().withElasticity(0.8));
+        gameObjects.add(new Box(new PVector(fieldWidth/2,0.f, (fieldDepth/2)), 0, 10, 40, fieldDepth, 0x55FFFFFF).isStatic());
 
         // sample rotation constructor: 
         for (int i = 0; i > 6; i++){
@@ -66,6 +77,9 @@ public class GameInstance{
     public void startElevator() {
         robot.startElevator();
     }
+    public void returnElevator() {
+        robot.returnElevator();
+    }
     
     public void rotateRobot(float angle) {
         robot.setAngularVelocity(angle);
@@ -84,13 +98,14 @@ public class GameInstance{
 
         Logger.init(graphics);
 
-        String dataDir = "C:\\Users\\zhish\\Documents\\APCompSci_create_project\\app\\src\\main\\java\\create_project\\data\\";
+        String dataDir = System.getenv("DATA_PATH");
+        
 
         if (dataDir == null) {
+            dataDir = "C:\\Users\\zhish\\Documents\\APCompSci_create_project\\app\\src\\main\\java\\create_project\\data\\";
             System.out.println("DATA_PATH not set, ");
             System.out.println("    macos/linux: export DATA_PATH=/path/to/data");
             System.out.println("    windows: set DATA_PATH=C:\\path\\to\\data");
-            System.exit(1);
         }
 
         try {
@@ -98,10 +113,15 @@ public class GameInstance{
         } catch (Exception e) {
             e.printStackTrace();
         }
-        reef.scale((float)(39.37 / 1.196));
+        // reef.scale((float)(39.37 / 1.196));
+        reef.scale((float)(39.37));
+
+        blueReef.loadShape(reef);
     }
 
     public void draw() {
+        graphics.beginDraw();
+
         for (GameObject gameObject : gameObjects) {
             for (GameObject otherGameObject : gameObjects) {
                 if (gameObject != otherGameObject) {
@@ -109,7 +129,6 @@ public class GameInstance{
                 }
             }
         }
-        graphics.beginDraw();
         graphics.background(50);
         graphics.camera(0.0f,72.0f,-64.0f, (float) robot.getPosition().getX(), 0.f, (float) robot.getPosition().getY(),
           0.0f, -1.0f, 0.0f);
@@ -121,13 +140,33 @@ public class GameInstance{
             gameObject.update();
             gameObject.draw(graphics);
         }
-        if (reef != null) {
-            graphics.pushMatrix();
-            graphics.translate(0, 0, 100);
-            graphics.shape(reef);
-            graphics.popMatrix();
-        }
+        robot.checkIntake(corals);
+        // if (reef != null) {
+        //     graphics.pushMatrix();
+        //     graphics.translate(0, 0, 100);
+        //     graphics.shape(reef);
+        //     graphics.popMatrix();
+        // }
+        drawStaticElements();
         graphics.endDraw();
+    }
+
+    private void drawStaticElements() {
+        drawBox(0f, 0f, 297.75f + 1, fieldWidth, 1f, 2f, 0xFF000000);
+        drawBox(0f, 0f, fieldDepth - (297.75f + 1), fieldWidth, 1f, 2f, 0xFF000000);
+        drawBox(12f + ((fieldWidth - 24) / 4f), 0f, 322.75f + 1, (fieldWidth-24)/2, 1f, 2f, 0xFF0000FF);
+        drawBox(12f + ((fieldWidth - 24) / 4f), 0f, fieldDepth - (322.75f + 1), (fieldWidth-24)/2, 1f, 2f, 0xFF0000FF);
+    }
+
+    private void drawBox(float x, float y, float z, float width, float height, float depth, int color) {
+        graphics.pushMatrix();
+        graphics.pushStyle();
+        graphics.translate(x, y, z);
+        graphics.fill(color);
+        graphics.box(width, height, depth);
+        graphics.popStyle();
+        graphics.popMatrix();
+
     }
 
     public PGraphics getGraphics() {
@@ -152,5 +191,6 @@ public class GameInstance{
     public void createCoral() {
         Coral coral = new Coral(new PVector(0.f, 70.f, 50.f));
         gameObjects.add(coral);
+        corals.add(coral);
     }
 }

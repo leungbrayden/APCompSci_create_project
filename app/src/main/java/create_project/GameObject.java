@@ -3,6 +3,7 @@ package create_project;
 import java.util.ArrayList;
 import java.util.List;
 
+import processing.core.PApplet;
 import processing.core.PGraphics;
 import processing.core.PVector;
 
@@ -15,7 +16,7 @@ public class GameObject {
 
     public GameObject(Vector2D position, Vector2D velocity, Vector2D acceleration, double rotation,
                       double angularVelocity, double angularAcceleration, double mass, 
-                      boolean isStatic, boolean isVisible, Vector2D[] vertices) {
+                      boolean isStatic, boolean isVisible, Vector2D[] vertices, double restitution) {
         this.position = position;
         this.velocity = velocity;
         this.acceleration = acceleration;
@@ -28,26 +29,28 @@ public class GameObject {
         this.vertices = vertices;
 
         this.isCollidable = true;
-        this.restitution = 0.9;
+        this.restitution = restitution;
         this.friction = .001;
-        this.inertia = 10.0; // Assuming a simple shape for inertia calculation
         this.collidable = true; // Default to collidable
-        if (this.mass == 0) {
+        if (mass == 0) {
             this.invMass = 0;
             this.invInertia = 0;
             this.inertia = 0;
             return;
         }
+        
+        this.inertia = (mass * 
+            ((vertices[0].getX() * vertices[0].getX()) + (vertices[0].getY() * vertices[0].getY()))) / 12.;
         this.invMass = 1.0 / mass;
         this.invInertia = 1.0 / inertia;
     }
 
     public GameObject(Vector2D[] vertices) {
-        this(new Vector2D(), new Vector2D(), new Vector2D(), 0, 0, 0, 1, false, true, vertices);
+        this(new Vector2D(), new Vector2D(), new Vector2D(), 0, 0, 0, 1, false, true, vertices, 0.5);
     }
 
     public GameObject(Vector2D[] vertices, Vector2D position, double mass) {
-        this(position, new Vector2D(), new Vector2D(), 0, 0, 0, mass, false, true, vertices);
+        this(position, new Vector2D(), new Vector2D(), 0, 0, 0, mass, false, true, vertices, 0.5);
     }
 
     public static GameObject createRect(Vector2D position, double width, double height) {
@@ -166,12 +169,18 @@ public class GameObject {
     ) {
         double maxDepth = -Double.MAX_VALUE;
         Vector2D deepest = null;
+        boolean isInverted = false;
 
         for (Vector2D v : verts1) {
             Vector2D worldV = Vector2D.add(pos1, v);
             double depth = normal.dot(Vector2D.sub(worldV, pos2));
-            if (depth > maxDepth) {
-                maxDepth = depth;
+            if (Math.abs(depth) > maxDepth) {
+                maxDepth = Math.abs(depth);
+                if (depth < 0) {
+                    isInverted = true;
+                } else {
+                    isInverted = false;
+                }
                 deepest = worldV.copy();
             }
         }
@@ -179,17 +188,26 @@ public class GameObject {
         for (Vector2D v : verts2) {
             Vector2D worldV = Vector2D.add(pos2, v);
             double depth = normal.dot(Vector2D.sub(worldV, pos1));
-            if (depth > maxDepth) {
-                maxDepth = depth;
+            if (Math.abs(depth) > maxDepth) {
+                maxDepth = Math.abs(depth);
+                if (depth < 0) {
+                    isInverted = true;
+                } else {
+                    isInverted = false;
+                }
                 deepest = worldV.copy();
             }
+        }
+
+        if (isInverted) {
+            normal.scale(-1.);
         }
 
         return deepest;
     }
 
 
-    private void handleCollision(GameObject other, Vector2D collisionNormal, double minOverlap, Vector2D contactPoint) {
+    public void handleCollision(GameObject other, Vector2D collisionNormal, double minOverlap, Vector2D contactPoint) {
         // Relative vector from center of mass to contact
         Vector2D ra = Vector2D.sub(contactPoint,this.position);
         Vector2D rb = Vector2D.sub(contactPoint,other.position);
@@ -239,7 +257,7 @@ public class GameObject {
 
         // Positional correction to avoid sinking
         final double percent = 0.2; // 20% of penetration
-        final double slop = 0.1;
+        final double slop = 0.0;
         Vector2D correction = Vector2D.mult(collisionNormal, 
             (Math.max(minOverlap - slop, 0.0) / (this.invMass + other.invMass) * percent));
         this.setPosition(Vector2D.sub(this.position,Vector2D.mult(correction,this.invMass)));
@@ -262,9 +280,8 @@ public class GameObject {
             this.angularVelocity += angularAcceleration * Constants.deltaTime;
 
             // friction
-            velocity.scale(0.99);
-            this.angularVelocity *= 0.99;
-
+            velocity.scale(0.997);
+            this.angularVelocity *= 0.98;
         }
     }
 
@@ -327,6 +344,7 @@ public class GameObject {
     }
 
     public void applyImpulse(Vector2D impulse, Vector2D point, double otherInvMass) {
+        if (this.invMass == 0) return; // No impulse if static
         // Before applying angular velocity
         double angularImpulse = Vector2D.cross(point,impulse);
         if (otherInvMass == 0) angularImpulse *= 0.5; // soften static collision
@@ -334,6 +352,7 @@ public class GameObject {
 
         // Clamp
         this.angularVelocity = Math.max(-10, Math.min(angularVelocity, 10));
+
         this.velocity.add(Vector2D.mult(impulse, this.getInvMass()));
     }
 
@@ -346,7 +365,15 @@ public class GameObject {
     }
 
     public void setInertia(double inertia) {
+        if (inertia == 0) {
+            return;
+        }
         this.inertia = inertia;
+        this.invInertia = 1. / inertia; 
+    }
+
+    public double getInertia() {
+        return this.inertia;
     }
 
     public void setVisible(boolean isVisible) {
@@ -355,6 +382,10 @@ public class GameObject {
 
     public boolean isVisible() {
         return isVisible;
+    }
+
+    public boolean isCollidable() {
+        return isCollidable;
     }
 
     public boolean getStatic() {
@@ -368,4 +399,18 @@ public class GameObject {
     public void setVertices(Vector2D[] vertices) {
         this.vertices = vertices;
     }
+
+    public void setCollidable(boolean collidable) {
+        this.collidable = collidable;
+    }
+
+    // method chaining
+    public GameObject withElasticity(double elasticity) {
+        this.restitution = elasticity;
+        return this;
+    }
+    // public GameObject withInertia(double inertia) {
+    //     this.setInertia(inertia);
+    //     return this;
+    // }
 }

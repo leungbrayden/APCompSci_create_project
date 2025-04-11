@@ -173,20 +173,51 @@ public class GameInstance{
         draw();
         return graphics;
     }
-
-    private void theFunctionThatCountsForYou(int points){
-        
+    //the cases are 1, 2, 3, 4, with input as integer. 
+    public int coralScored(int input){
+        int coralPoints = 0;
+        switch (input) {
+            case 1:
+                coralPoints = levelPointTele[0];
+                break;
+            case 2:
+                coralPoints = levelPointTele[1];
+                break;
+            case 3:
+                coralPoints = levelPointTele[2];
+                break;
+            case 4:
+                coralPoints = levelPointTele[3];
+                break;
+        }
+        return coralPoints;
     }
 
+    private int theFunctionThatCountsForYou(int coralPoints){
+        return 2;
+    }
+//starts in drawHud
     public void drawHUD(PApplet app) {
         app.fill(0,0,255);
         app.rect(100,0,900,100);
+
         app.fill(255,0,0);
         app.rect(100, 0, 450, 100);
-        //starts in drawHud
-        // app.text(theFunctionThatCountsForYou(points));dds
 
+        
+        app.fill(255); 
+        app.stroke(255); 
+        app.size(24,24);
+        app.text("testtext",0,0); 
+        app.text(theFunctionThatCountsForYou(coralScored(2)),0,0); 
+
+        
     }
+    //bombardilo crocodilo
+
+
+
+
 
     public void createCoral() {
         Coral coral = new Coral(new PVector(0.f, 70.f, 50.f));

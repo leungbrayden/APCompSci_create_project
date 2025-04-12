@@ -3,6 +3,7 @@ package create_project;
 public class MotionProfile {
     private double maxVel, maxAccel;
     private double startPos, endPos, direction;
+    private double minPos, maxPos;
     private double accelTime, cruiseTime, decelTime;
     private double totalTime;
     private double accelDist, cruiseDist, decelDist;
@@ -10,16 +11,22 @@ public class MotionProfile {
     private double time = 0;
     private boolean isMoving = false;
 
-    public MotionProfile(double startPos, double endPos, double maxVel, double maxAccel) {
+    public MotionProfile(double minPos, double maxPos, double maxVel, double maxAccel) {
         this.maxVel = maxVel;
         this.maxAccel = maxAccel;
+        this.minPos = minPos;
+        this.maxPos = maxPos;
 
-        reset(startPos, endPos);
+        reset(minPos, maxPos);
     }
 
     public void reset(double startPos, double endPos) {
         this.startPos = startPos;
         this.endPos = endPos;
+        if (startPos == endPos) {
+            isMoving = false;
+            return;
+        }
         double distance = endPos - startPos;
         direction = Math.signum(distance);
         distance = Math.abs(distance);
@@ -49,6 +56,13 @@ public class MotionProfile {
 
     public double getTotalTime() {
         return totalTime;
+    }
+    
+    public double getMinPos() {
+        return minPos;
+    }
+    public double getMaxPos() {
+        return maxPos;
     }
 
     public double getPosition() {

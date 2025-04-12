@@ -39,6 +39,12 @@ public class IntakeZone {
                 if (coral.getPosition().getX() > position.x - width / 2. && coral.getPosition().getX() < position.x + width / 2 &&
                     coral.getY() > position.y - height / 2 && coral.getY() < position.y + height / 2 &&
                     coral.getPosition().getY() > position.z - depth / 2. && coral.getPosition().getY() < position.z + depth / 2) {
+                        
+                    coral.setVisible(false);
+                    coral.setCollidable(false);
+                    coral.setPosition(new Vector2D());
+                    coral.setRotation(0);
+                    coral.setStatic(true);
                     
                     return coral;
                 }

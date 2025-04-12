@@ -137,7 +137,13 @@ public class GameInstance{
 
 
         for (GameObject gameObject : gameObjects) {
+            if (gameObject == robot.getCoral()) {
+                continue;
+            }
             gameObject.update();
+            if (!gameObject.isVisible()) {
+                continue;
+            }
             gameObject.draw(graphics);
         }
         robot.checkIntake(corals);
@@ -207,17 +213,12 @@ public class GameInstance{
         
         app.fill(255); 
         app.stroke(255); 
-        app.size(24,24);
         app.text("testtext",0,0); 
         app.text(theFunctionThatCountsForYou(coralScored(2)),0,0); 
 
         
     }
     //bombardilo crocodilo
-
-
-
-
 
     public void createCoral() {
         Coral coral = new Coral(new PVector(0.f, 70.f, 50.f));

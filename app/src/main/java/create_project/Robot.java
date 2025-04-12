@@ -11,11 +11,13 @@ public class Robot extends Box {
   private final static float MAX_SPEED = 186.f;
   private final static float MAX_ACCEL = 200.f;
   private static final double kP = 5.0;
+  private static final float ARM_LENGTH = 20.f;
 
 //   private boolean holdingCoral = true;
   private Coral coral = null;
-
-  private MotionProfile mechanism = new MotionProfile(0, 50, 100, 25);
+  private double ELEVATOR_HEIGHT = 90;
+  private MotionProfile elevator = new MotionProfile(0, ELEVATOR_HEIGHT*(2./3.), 100, 25);
+  private MotionProfile arm = new MotionProfile(Math.PI*(3./2.), Math.PI*2, Math.PI/4., 100);
 
   private int lastCollisionTime = 0;
 
@@ -23,7 +25,7 @@ public class Robot extends Box {
   private PVector intakeZonePosition = new PVector(0.f, 0.f, 15.f);
 
   public Robot(boolean isRedAlliance, int teamNumber) {
-    super(new PVector(0.f, 0.f, 297.5f), 115, 30., 5., 30., 0xFFFF0000);
+    super(new PVector(0.f, 0.f, 297.5f), 115, 34., 5., 34., 0xFFFF0000);
     this.isRedAlliance = isRedAlliance;
     this.teamNumber = teamNumber;
   }
@@ -40,17 +42,29 @@ public class Robot extends Box {
       return;
     }
     this.coral = intakedCoral;
-
+    this.coral.setCollidable(false);
+    this.coral.setPosition(new Vector2D());
+    this.coral.setStatic(true);
   }
 
   public void startElevator() {
-    mechanism.reset(mechanism.getPosition(), 50);
-    mechanism.start();
+    elevator.stop();
+    elevator.reset(elevator.getPosition(), elevator.getMaxPos());
+    elevator.start();
+    arm.reset(arm.getPosition(), Math.PI*(3./4.));
+    arm.start();
   }
 
   public void returnElevator() {
-    mechanism.reset(mechanism.getPosition(), 0);
-    mechanism.start();
+    elevator.stop();
+    elevator.reset(elevator.getPosition(), elevator.getMinPos());
+    elevator.start();
+    arm.reset(arm.getPosition(), arm.getMinPos());
+    arm.start();
+  }
+
+  public Coral getCoral() {
+    return coral;
   }
 
   public void move(Vector2D direction) {
@@ -133,27 +147,88 @@ public class Robot extends Box {
         pg.box((float) this.getWidth(), 5.f, 3.f);
         pg.popMatrix();
 
-        if (Constants.DEBUG) {
-            Logger.recordVector(this.getVelocity(), new PVector((float) this.getPosition().getX(), 10.f, (float) this.getPosition().getY()), 0xFF00FF00);
-        }
+        // if (Constants.DEBUG) {
+        //     Logger.recordVector(this.getVelocity(), new PVector((float) this.getPosition().getX(), 10.f, (float) this.getPosition().getY()), 0xFF00FF00);
+        // }
 
         if (coral != null) {
             pg.pushMatrix();
             coral.setVisible(true);
-            pg.translate(0.f, (float) mechanism.getPosition(), 0.f);
+            pg.translate(0.f, (float) elevator.getPosition(), 0.f);
             coral.draw(pg);
             pg.popMatrix();
         }
 
         pg.fill(0xFF000000);
-        pg.translate(0, (float)mechanism.getPosition()/2.f, 0);
-        pg.box(10, (float) mechanism.getPosition(), 10);
-        mechanism.update();
+
+        pg.translate(0.f, 2, -2.5f);
+        
+        pg.pushMatrix();
+        pg.translate(0.f, (float) (ELEVATOR_HEIGHT/6.), 0.f);
+        // pg.box(10,(float) (ELEVATOR_HEIGHT/3.), 2);
+        drawBoxFrame(pg, 23, ELEVATOR_HEIGHT/3. + 3, false);
+        pg.popMatrix();
+
+        pg.pushMatrix();
+        pg.translate(0.f, (float)((ELEVATOR_HEIGHT/6.) + (elevator.getPosition()*(1./2.))), 0.f);
+        drawBoxFrame(pg, 21.5, ELEVATOR_HEIGHT/3. + 3, false);
+        pg.popMatrix();
+
+        pg.pushMatrix();
+        pg.translate(0.f,  (float)(5 + elevator.getPosition()), 0.f);
+        // pg.box(6, (float) (ELEVATOR_HEIGHT/3.), 2);
+        drawBoxFrame(pg, 18, 10, true);
+        pg.popMatrix();
+
+        elevator.update();
+
+
+        // pg.translate(-2, 2 +40/2, 0);
+        // pg.box(2, 40, 2);
+        // pg.popMatrix();
+        
+        // pg.translate(0, 42.f, 0);
+        // pg.translate(0.f, (float)((ARM_LENGTH/2.)*Math.sin(arm.getPosition())), (float)((ARM_LENGTH/2)*Math.cos(arm.getPosition())));
+        // pg.rotateX((float) -arm.getPosition());
+        // pg.box(2, 2, ARM_LENGTH);
+        // elevator.update();
+        // arm.update();
         
         pg.popMatrix();
 
         if (Constants.DEBUG) {
             intakeZone.draw(pg);
         }
-  }
+    }
+
+    public void drawBoxFrame(PGraphics pg, double width, double height, boolean elevatorCarriage) {
+        pg.pushMatrix();
+        pg.translate((float)((width-1)/2.), 0, 0);
+        pg.box(1, (float) height, 2);
+        pg.popMatrix();
+        pg.pushMatrix();
+        pg.translate((float)(-(width-1)/2.), 0, 0);
+        pg.box(1, (float) height, 2);
+        pg.popMatrix();
+        if (elevatorCarriage) {
+            pg.pushMatrix();
+            pg.translate(0, (float) (height/2.), 0);
+            pg.box((float) width, 1, 2);
+            pg.popMatrix();
+            pg.pushMatrix();
+            pg.translate(0, (float) (-(height/2.)), 0);
+            pg.box((float) width, 1, 2);
+            pg.popMatrix();
+            return;
+        }
+        pg.pushMatrix();
+        pg.translate(0, (float) (height/2.), 2);
+        pg.box((float) width, 1, 1);
+        pg.popMatrix();
+        pg.pushMatrix();
+        pg.translate(0, (float) (-(height/2.)), 0);
+        pg.box((float) width, 1, 1);
+        pg.popMatrix();
+        return;
+    }
 }

@@ -81,7 +81,4 @@ public class Coral extends GameObject{
     public float getAccelerationY() {
         return accelerationY;
     }
-
-
-
 }

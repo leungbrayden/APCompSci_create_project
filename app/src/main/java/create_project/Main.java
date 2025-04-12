@@ -9,6 +9,7 @@ import processing.core.PApplet;
 public class Main extends PApplet{
     private boolean gameStart = true;
     public static int time = 0;
+    private long timerStart;
 
     private double rotationController = 0;
     public void settings(){
@@ -21,6 +22,7 @@ public class Main extends PApplet{
         // size(1080, 800, P2D);
         background(0);
         frameRate(Constants.FRAMERATE);
+        startTimer();
         GameInstance.getInstance().setGraphics(createGraphics(1080,720, P3D));
     }
 
@@ -36,6 +38,10 @@ public class Main extends PApplet{
 
     public static int getTime() {
         return time;
+    }
+
+    public void startTimer(){
+        timerStart = System.currentTimeMillis();
     }
 
     public void mousePressed(){

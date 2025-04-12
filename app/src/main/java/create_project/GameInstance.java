@@ -3,6 +3,8 @@ package create_project;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.checkerframework.checker.units.qual.min;
+
 import processing.core.PApplet;
 import processing.core.PGraphics;
 import processing.core.PShape;
@@ -24,6 +26,9 @@ public class GameInstance{
     private int[] levelPointAuto = {3,4,6,7,6,4};
     private int[] levelPointTele = {2,3,4,5,6,4};
     private int sumCoralPoints = 0;
+
+    private long timerStart;
+    private long timerEnd = 2*60*1000+15*1000;
 
     private final float fieldWidth = 317;
     private final float fieldDepth = 690f;
@@ -218,24 +223,19 @@ public class GameInstance{
         app.stroke(255); 
         // app.text("testtext", 1080/2, 720/2); 
         app.text(theFunctionThatCountsForYou(0),1080/3, 30); 
-
+        app.text(timerCount(), 1080/2, 30);
         //test using keys pressed
         
     }
-    
-    public void timerCount(String[] args){
-        long timerStart = System.currentTimeMillis();
 
-        for(int i = 1; i <= 10; i++){
-            long currentTime = System.currentTimeMillis();
-            
-
-
-            
+    public String timerCount(){
+        long currentTime = System.currentTimeMillis();
+        long elapsedTime = currentTime - timerStart;
+        long timeLeft = timerEnd - elapsedTime;
+        int seconds = (int)((timeLeft/1000) % 60);
+        int minutes = (int) ((timeLeft/(1000*60))%60);
+        return String.format("Time: %02d:%02d", minutes, seconds);
         }
-            // app.text(elapsedTime, 500, 60);
-    }
-
 
     public void createCoral() {
         Coral coral = new Coral(new PVector(0.f, 70.f, 50.f));

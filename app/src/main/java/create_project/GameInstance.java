@@ -208,7 +208,6 @@ public class GameInstance{
         app.fill(255,0,0);
         app.rect(100, 0, 450, 100);
 
-        
         app.fill(255); 
         app.stroke(255); 
         app.text("testtext", 1080/2, 720/2); 
@@ -218,9 +217,18 @@ public class GameInstance{
         
     }
     
+    public void timerCount(String[] args){
+        long timerStart = System.currentTimeMillis();
+
+        for(int i = 1; i <= 10; i++){
+            long currentTime = System.currentTimeMillis();
+            
 
 
-
+            
+        }
+            // app.text(elapsedTime, 500, 60);
+    }
 
 
     public void createCoral() {

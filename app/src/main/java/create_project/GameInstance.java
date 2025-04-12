@@ -23,6 +23,7 @@ public class GameInstance{
 
     private int[] levelPointAuto = {3,4,6,7,6,4};
     private int[] levelPointTele = {2,3,4,5,6,4};
+    private int sumCoralPoints = 0;
 
     private final float fieldWidth = 317;
     private final float fieldDepth = 690f;
@@ -98,8 +99,9 @@ public class GameInstance{
 
         Logger.init(graphics);
 
-        String dataDir = System.getenv("DATA_PATH");
-        
+        // String dataDir = System.getenv("DATA_PATH");
+
+        String dataDir = null;
 
         if (dataDir == null) {
             dataDir = "C:\\Users\\zhish\\Documents\\APCompSci_create_project\\app\\src\\main\\java\\create_project\\data\\";
@@ -180,7 +182,7 @@ public class GameInstance{
         return graphics;
     }
     //the cases are 1, 2, 3, 4, with input as integer. 
-    public int coralScored(int input){
+    public void coralScored(int input){
         int coralPoints = 0;
         switch (input) {
             case 1:
@@ -196,12 +198,14 @@ public class GameInstance{
                 coralPoints = levelPointTele[3];
                 break;
         }
-        return coralPoints;
+        theFunctionThatCountsForYou(coralPoints);
     }
 
     private int theFunctionThatCountsForYou(int coralPoints){
-        return 2;
+        sumCoralPoints += coralPoints;
+        return sumCoralPoints;
     }
+
 //starts in drawHud
     public void drawHUD(PApplet app) {
         app.fill(0,0,255);
@@ -210,15 +214,28 @@ public class GameInstance{
         app.fill(255,0,0);
         app.rect(100, 0, 450, 100);
 
-        
         app.fill(255); 
         app.stroke(255); 
-        app.text("testtext",0,0); 
-        app.text(theFunctionThatCountsForYou(coralScored(2)),0,0); 
+        app.text("testtext", 1080/2, 720/2); 
+        app.text(theFunctionThatCountsForYou(0),1080/3, 30); 
 
+        //test using keys pressed
         
     }
-    //bombardilo crocodilo
+    
+    public void timerCount(String[] args){
+        long timerStart = System.currentTimeMillis();
+
+        for(int i = 1; i <= 10; i++){
+            long currentTime = System.currentTimeMillis();
+            
+
+
+            
+        }
+            // app.text(elapsedTime, 500, 60);
+    }
+
 
     public void createCoral() {
         Coral coral = new Coral(new PVector(0.f, 70.f, 50.f));

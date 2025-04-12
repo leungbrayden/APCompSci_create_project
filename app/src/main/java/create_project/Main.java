@@ -9,6 +9,8 @@ import processing.core.PApplet;
 public class Main extends PApplet{
     private boolean gameStart = true;
     public static int time = 0;
+
+    private double rotationController = 0;
     public void settings(){
         size(1080, 720, P2D);
     }
@@ -42,12 +44,19 @@ public class Main extends PApplet{
 
     public void handleMovement() {
         Vector2D movement = new Vector2D(0, 0);
+        boolean rotationChanged = false;
 
         if (keysHeld.contains('q')) {
-            GameInstance.getInstance().rotateRobot(3);
+            rotationChanged = true;
+            if (rotationController < 1) {
+                rotationController += 0.01;
+            }
         }
         if (keysHeld.contains('e')) {
-            GameInstance.getInstance().rotateRobot(-3);
+            rotationChanged = true;
+            if (rotationController > -1) {
+                rotationController -= 0.01;
+            }
         }
         if (keysHeld.contains('w')) {
             movement.add(0, 1);
@@ -62,6 +71,18 @@ public class Main extends PApplet{
             movement.add(1, 0);
         }
         GameInstance.getInstance().moveRobot(movement.normal());
+        if (!rotationChanged) {
+            if (Math.abs(rotationController) < 0.1) {
+                rotationController = 0;
+            } else {
+                if (rotationController > 0) {
+                    rotationController -= 0.03;
+                } else {
+                    rotationController += 0.03;
+                }
+            }
+        }
+        GameInstance.getInstance().rotateRobot((float) rotationController * 3);
     }
 
     public void keyPressed() {

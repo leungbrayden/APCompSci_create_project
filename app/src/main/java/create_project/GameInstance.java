@@ -99,9 +99,9 @@ public class GameInstance{
 
         Logger.init(graphics);
 
-        // String dataDir = System.getenv("DATA_PATH");
+        String dataDir = System.getenv("DATA_PATH");
 
-        String dataDir = null;
+        // String dataDir = null;
 
         if (dataDir == null) {
             dataDir = "C:\\Users\\zhish\\Documents\\APCompSci_create_project\\app\\src\\main\\java\\create_project\\data\\";
@@ -216,7 +216,7 @@ public class GameInstance{
 
         app.fill(255); 
         app.stroke(255); 
-        app.text("testtext", 1080/2, 720/2); 
+        // app.text("testtext", 1080/2, 720/2); 
         app.text(theFunctionThatCountsForYou(0),1080/3, 30); 
 
         //test using keys pressed

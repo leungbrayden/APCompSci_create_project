@@ -28,6 +28,8 @@ public class Robot extends Box {
     super(new PVector(0.f, 0.f, 297.5f), 115, 34., 5., 34., 0xFFFF0000);
     this.isRedAlliance = isRedAlliance;
     this.teamNumber = teamNumber;
+    System.out.println("inertia" + this.getInertia());
+    this.setInertia(2000.0);
   }
 
   public Robot(boolean isRedAlliance, int teamNumber, double width, double depth) {
@@ -162,6 +164,7 @@ public class Robot extends Box {
         pg.fill(0xFF000000);
 
         pg.translate(0.f, 2, -2.5f);
+        pg.rotateX((float) -Math.PI* (8.f/180.f));
         
         pg.pushMatrix();
         pg.translate(0.f, (float) (ELEVATOR_HEIGHT/6.), 0.f);

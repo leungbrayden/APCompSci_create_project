@@ -79,6 +79,18 @@ public class Main extends PApplet{
             case 'g':
                 GameInstance.getInstance().returnElevator();
                 break;
+            case '1':
+                GameInstance.getInstance().coralScored(1);
+                break;
+            case '2':
+                GameInstance.getInstance().coralScored(2);
+                break;
+            case '3':
+                GameInstance.getInstance().coralScored(3);
+                break;
+            case '4':
+                GameInstance.getInstance().coralScored(4);
+                break;
         }
     }
 

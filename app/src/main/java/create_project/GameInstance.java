@@ -18,6 +18,7 @@ public class GameInstance{
 
     private Robot robot;
     private Reef blueReef;
+    private Barge blueBarge;
 
     private PGraphics graphics;
 
@@ -55,6 +56,11 @@ public class GameInstance{
 
         blueReef = new Reef(false);
         gameObjects.add(blueReef.withElasticity(0.1));
+
+        blueBarge = new Barge(false);
+        gameObjects.add(blueBarge.withElasticity(0.1));
+
+
 
         // gameObjects.add(new Box(new PVector(0.f,-1.f,345.4375f + 20), 20, 4.5, 12, 4.5, 0));
 
@@ -111,7 +117,7 @@ public class GameInstance{
 
         if (dataDir == null) {
             dataDir = "C:\\Users\\zhish\\Documents\\APCompSci_create_project\\app\\src\\main\\java\\create_project\\data\\";
-            dataDir = "C:\\Users\\zhish\\OneDrive\\Desktop\\APCSP FINAL\\APCompSci_create_project\\app\\src\\main\\java\\create_project\\data";
+            dataDir = "C:\\Users\\zhish\\OneDrive\\Desktop\\APCSP FINAL\\APCompSci_create_project\\app\\src\\main\\java\\create_project\\data\\";
             System.out.println("DATA_PATH not set, ");
             System.out.println("    macos/linux: export DATA_PATH=/path/to/data");
             System.out.println("    windows: set DATA_PATH=C:\\path\\to\\data");

@@ -28,6 +28,7 @@ public class Reef extends GameObject{
         this.reefMesh = shape;
     }
 
+
     @Override
     public void draw(PGraphics pg) {
         if (!this.isVisible()) {

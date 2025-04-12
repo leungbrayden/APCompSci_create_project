@@ -57,11 +57,6 @@ public class GameInstance{
         blueReef = new Reef(false);
         gameObjects.add(blueReef.withElasticity(0.1));
 
-        blueBarge = new Barge(false);
-        gameObjects.add(blueBarge.withElasticity(0.1));
-
-
-
         // gameObjects.add(new Box(new PVector(0.f,-1.f,345.4375f + 20), 20, 4.5, 12, 4.5, 0));
 
         gameObjects.add(new Box(new PVector(0,0.f,fieldDepth), 0, fieldWidth, 40, 10,0x55FFFFFF).isStatic().withElasticity(0.8)); 
@@ -246,10 +241,14 @@ public class GameInstance{
         app.text("Alliance 1", 1080-350, 65); 
 
         app.textSize(50);
-        app.text("Alliance 2    0", 120, 65); 
+        app.text("Alliance 2", 120, 65); 
+
+        int score = theFunctionThatCountsForYou(0);
+        int digitCount = (int) Math.log10(score + 1) + 1;
+        float widthChange = (digitCount - 1) * 15;
        
         app.textSize(50);
-        app.text(theFunctionThatCountsForYou(0),1080/2 + 110, 65); 
+        app.text(theFunctionThatCountsForYou(0),1080/2 - (130 + widthChange), 65); 
         
         app.fill(0);
         app.textSize(25);

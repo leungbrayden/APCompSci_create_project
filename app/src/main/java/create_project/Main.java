@@ -5,11 +5,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import processing.core.PApplet;
+import processing.core.PShape;
 
 public class Main extends PApplet{
     private boolean gameStart = true;
     public static int time = 0;
     private long timerStart;
+    // PShape barge;
 
     private double rotationController = 0;
     public void settings(){
@@ -24,6 +26,7 @@ public class Main extends PApplet{
         frameRate(Constants.FRAMERATE);
         startTimer();
         GameInstance.getInstance().setGraphics(createGraphics(1080,720, P3D));
+        // barge = loadShape("BARGE.obj");
     }
 
     public void draw(){
@@ -34,6 +37,7 @@ public class Main extends PApplet{
             image(GameInstance.getInstance().getGraphics(), 0, 0);
             GameInstance.getInstance().drawHUD(this);
         }
+
     }
 
     public static int getTime() {

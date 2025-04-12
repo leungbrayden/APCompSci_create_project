@@ -12,7 +12,7 @@ public class Barge extends GameObject{
 
     public Barge(boolean isRedAlliance) {
         super(new Vector2D[] {}, new Vector2D(0, 144 + depth/2.), 0);
-        this.setStatic(true);
+        this.setStatic(false);
         Vector2D[] points = new Vector2D[6];
         // set vertices of collision polygon
         for (int i = 0; i < 6; i++) {
@@ -30,7 +30,6 @@ public class Barge extends GameObject{
         this.bargeMesh = shape;
     }
 
-
     @Override
     public void draw(PGraphics pg) {
         if (!this.isVisible()) {
@@ -39,8 +38,6 @@ public class Barge extends GameObject{
 
         // draw stuff
         pg.pushMatrix();
-        pg.translate((float) getPosition().getX(), 0.f, (float) getPosition().getY());
-        pg.rotateY((float) Math.PI / 6.f);
         pg.shape(bargeMesh);
         pg.popMatrix();
     }

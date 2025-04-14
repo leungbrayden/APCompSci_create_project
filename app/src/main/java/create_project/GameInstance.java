@@ -6,6 +6,7 @@ import java.util.List;
 import org.checkerframework.checker.units.qual.min;
 
 import processing.core.PApplet;
+import processing.core.PConstants;
 import processing.core.PGraphics;
 import processing.core.PShape;
 import processing.core.PVector;
@@ -18,6 +19,7 @@ public class GameInstance{
 
     private Robot robot;
     private Reef blueReef;
+    private Barge blueBarge;
 
     private PGraphics graphics;
 
@@ -28,8 +30,8 @@ public class GameInstance{
     private int[] levelPointTele = {2,3,4,5,6,4};
     private int sumCoralPoints = 0;
 
-    private long timerStart;
-    private long timerEnd = 2*60*1000+15*1000;
+    private int timerStart;
+    private int timerEnd = 2*60*1000+15*1000;
 
     private final float fieldWidth = 317;
     private final float fieldDepth = 690f;
@@ -119,8 +121,8 @@ public class GameInstance{
         String dataDir = null;
 
         if (dataDir == null) {
-            // dataDir = "C:\\Users\\zhish\\Documents\\APCompSci_create_project\\app\\src\\main\\java\\create_project\\data\\";
-            // dataDir = "C:\\Users\\zhish\\OneDrive\\Desktop\\APCSP FINAL\\APCompSci_create_project\\app\\src\\main\\java\\create_project\\data";
+            dataDir = "C:\\Users\\zhish\\Documents\\APCompSci_create_project\\app\\src\\main\\java\\create_project\\data\\";
+            dataDir = "C:\\Users\\zhish\\OneDrive\\Desktop\\APCSP FINAL\\APCompSci_create_project\\app\\src\\main\\java\\create_project\\data\\";
             dataDir = "C:\\Users\\leung\\Desktop\\APCompSci_create_project\\app\\src\\main\\java\\create_project\\data\\";
             System.out.println("DATA_PATH not set, ");
             System.out.println("    macos/linux: export DATA_PATH=/path/to/data");
@@ -159,7 +161,7 @@ public class GameInstance{
           0.0f, -1.0f, 0.0f);
         }
         else {
-            graphics.camera(0.f,72.0f,-62.f, (float) robot.getPosition().getX(), 40.f, (float) robot.getPosition().getY(),
+            graphics.camera(0.f,72.0f,-64.f, (float) robot.getPosition().getX(), 40.f, (float) robot.getPosition().getY(),
           0.0f, -1.0f, 0.0f);
         }
 
@@ -241,6 +243,9 @@ public class GameInstance{
 
 //starts in drawHud
     public void drawHUD(PApplet app) {
+
+        app.rectMode(PConstants.CORNER);
+
         app.fill(0,0,255);
         app.rect(100,0,890,100);
 
@@ -253,28 +258,34 @@ public class GameInstance{
         app.fill(255); 
         app.stroke(0); 
 
-        app.textSize(50);
-        app.text("Alliance 1", 1080-350, 65); 
+        app.textMode(PConstants.CENTER);
 
         app.textSize(50);
-        app.text("Alliance 2    0", 120, 65); 
+        app.text("Alliance 1", 240, 45); 
+
+        app.textSize(50);
+        app.text("Alliance 2", 840, 45); 
+
+        int score = theFunctionThatCountsForYou(0);
+        int digitCount = (int) Math.log10(score + 1) + 1;
+        float widthChange = (digitCount - 1) * 15;
        
         app.textSize(50);
-        app.text(theFunctionThatCountsForYou(0),1080/2 + 110, 65); 
+        app.text(theFunctionThatCountsForYou(0),1080/2+30 - (130 + widthChange), 45); 
         
         app.fill(0);
         app.textSize(25);
-        app.text(timerCount(), (1080/2)-35, 55);
+        app.text(timerCount(), (1080/2)+10, 55);
         //test using keys pressed
         
     }
 
     public String timerCount(){
-        long currentTime = System.currentTimeMillis();
-        long elapsedTime = currentTime - timerStart;
-        long timeLeft = timerEnd - elapsedTime;
-        int seconds = (int)((timeLeft/1000) % 60);
-        int minutes = (int) ((timeLeft/(1000*60))%60);
+        int currentTime = Main.getGameTime();
+        int elapsedTime = currentTime - timerStart;
+        int timeLeft = timerEnd - elapsedTime;
+        int seconds = (timeLeft/1000) % 60;
+        int minutes = (timeLeft/(1000*60))%60;
         return String.format("%02d:%02d", minutes, seconds);
         }
 

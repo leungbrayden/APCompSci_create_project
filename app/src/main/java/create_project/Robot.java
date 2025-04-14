@@ -63,8 +63,9 @@ public class Robot extends Box {
   }
 
   public void startElevator() {
-    elevator.stop();
-    elevator.reset(elevator.getPosition(), 54);
+    elevator.stop(); // 54
+    // elevator.reset(elevator.getPosition(), 54);
+    elevator.reset(elevator.getPosition(), 36);
     // elevator.start();
     // arm.reset(arm.getPosition(), Math.PI*(3./4.));
     // arm.start();

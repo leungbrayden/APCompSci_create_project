@@ -103,6 +103,10 @@ public class GameInstance{
     public void reset() {
         instance = new GameInstance();
     }
+
+    public Robot getRobot() {
+        return robot;
+    }
     /**
      *  sets graphics object for the game instance and initializes objects that require it
      *  @param graphics the graphics object to set
@@ -120,7 +124,7 @@ public class GameInstance{
         if (dataDir == null) {
             dataDir = "C:\\Users\\zhish\\Documents\\APCompSci_create_project\\app\\src\\main\\java\\create_project\\data\\";
             dataDir = "C:\\Users\\zhish\\OneDrive\\Desktop\\APCSP FINAL\\APCompSci_create_project\\app\\src\\main\\java\\create_project\\data\\";
-            
+            dataDir = "C:\\Users\\leung\\Desktop\\APCompSci_create_project\\app\\src\\main\\java\\create_project\\data\\";
             System.out.println("DATA_PATH not set, ");
             System.out.println("    macos/linux: export DATA_PATH=/path/to/data");
             System.out.println("    windows: set DATA_PATH=C:\\path\\to\\data");
@@ -128,7 +132,7 @@ public class GameInstance{
 
         try {
             reef = graphics.loadShape(dataDir+"REEF.obj");
-            barge = graphics.loadShape(dataDir+"BARGE.obj");
+            // barge = graphics.loadShape(dataDir+"BARGE.obj");
             //troubleshoot
             System.out.println("objects loaded");
         } catch (Exception e) {
@@ -136,7 +140,7 @@ public class GameInstance{
         }
         // reef.scale((float)(39.37 / 1.196));
         reef.scale((float)(39.37));
-        barge.scale((float)(39.37));
+        // barge.scale((float)(39.37));
 
         blueReef.loadShape(reef);
     }
@@ -152,9 +156,19 @@ public class GameInstance{
             }
         }
         graphics.background(50);
-        graphics.camera(0.0f,72.0f,-64.0f, (float) robot.getPosition().getX(), 40.f, (float) robot.getPosition().getY(),
+        if (Constants.FOLLOW_ROBOT) {
+            var cameraPos = Vector2D.add(new Vector2D(0,100).rotate(robot.getRotation()),robot.getPosition());
+        graphics.camera((float) cameraPos.getX(),72.0f,(float) cameraPos.getY(), (float) robot.getPosition().getX(), 40.f, (float) robot.getPosition().getY(),
           0.0f, -1.0f, 0.0f);
+        }
+        else {
+            graphics.camera(0.f,72.0f,-64.f, (float) robot.getPosition().getX(), 40.f, (float) robot.getPosition().getY(),
+          0.0f, -1.0f, 0.0f);
+        }
+
         // graphics.camera(0.0f,200.0f,-64.0f, (float) robot.getPosition().getX(), 40.f, (float) robot.getPosition().getY(),
+        //   0.0f, -1.0f, 0.0f);
+        // graphics.camera((float) robot.getPosition().getX()+5, 1000.f, (float) robot.getPosition().getY(), (float) robot.getPosition().getX()+5, 40.f, (float) robot.getPosition().getY(),
         //   0.0f, -1.0f, 0.0f);
         graphics.perspective();
         graphics.noStroke();

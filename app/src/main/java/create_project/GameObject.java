@@ -298,7 +298,7 @@ public class GameObject {
                 return;
             }
             // friction
-            velocity.scale(0.997);
+            velocity.scale(0.995);
             this.angularVelocity *= 0.98;
         }
     }

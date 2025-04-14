@@ -146,10 +146,6 @@ public class Main extends PApplet{
         if (!keysHeld.contains(key)) {
             keysHeld.add(key);
         }
-
-        if (key == 'i') {
-            GameInstance.getInstance().createCoral();
-        }
         switch (key) {
             case 'u':
                 GameInstance.getInstance().createCoral();

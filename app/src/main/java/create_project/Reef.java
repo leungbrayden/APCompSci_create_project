@@ -49,7 +49,7 @@ public class Reef extends GameObject{
         negativeOffset = new Vector2D(-6.5f, L32OFFSET);
         for (int i = 0; i < 12; i++) {
             intakeZones.get(2).add(new IntakeZone(PVector.add(L3POSITION, (i % 2 == 0 ? positiveOffset : negativeOffset).toPVector()), 10, 10, 10));
-            intakeZones.get(2).getLast().setRotation(0, -(Math.PI/2.f)-((Math.PI/3.f)*(i/2)), 0);
+            intakeZones.get(2).get(intakeZones.get(2).size()-1).setRotation(0, -(Math.PI/2.f)-((Math.PI/3.f)*(i/2)), 0);
             if (i % 2 == 1) {
                 positiveOffset = positiveOffset.rotate((float) (Math.PI / 3.));
                 negativeOffset = negativeOffset.rotate((float) (Math.PI / 3.));
@@ -60,7 +60,7 @@ public class Reef extends GameObject{
         negativeOffset = new Vector2D(-6.5f, L32OFFSET);
         for (int i = 0; i < 12; i++) {
             intakeZones.get(1).add(new IntakeZone(PVector.add(L2POSITION, (i % 2 == 0 ? positiveOffset : negativeOffset).toPVector()), 10, 10, 10));
-            intakeZones.get(1).getLast().setRotation(0, -(Math.PI/2.f)-((Math.PI/3.f)*(i/2)), 0);
+            intakeZones.get(1).get(intakeZones.get(1).size()-1).setRotation(0, -(Math.PI/2.f)-((Math.PI/3.f)*(i/2)), 0);
             if (i % 2 == 1) {
                 positiveOffset = positiveOffset.rotate((float) (Math.PI / 3.));
                 negativeOffset = negativeOffset.rotate((float) (Math.PI / 3.));

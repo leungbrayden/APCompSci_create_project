@@ -64,7 +64,8 @@ public class Elevator extends MotionProfile {
     }
 
     public Stage getLastStage() {
-        return stages.getLast();
+        // return stages.getLast();
+        return stages.get(stages.size() - 1);
     }
 
     public static class Stage {

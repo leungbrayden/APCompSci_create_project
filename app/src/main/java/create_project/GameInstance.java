@@ -3,8 +3,6 @@ package create_project;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.checkerframework.checker.units.qual.min;
-
 import processing.core.PApplet;
 import processing.core.PConstants;
 import processing.core.PGraphics;
@@ -52,9 +50,12 @@ public class GameInstance{
         gameObjects.add(floor);
         robot = new Robot(true, 1234);
         gameObjects.add(robot.withElasticity(0.4));
-        var coral = new Coral(new PVector(0.f, 2.25f, 100.f + 20));
-        gameObjects.add(coral.withElasticity(0.1));
-        corals.add(coral);        
+        var coral = new Coral(new PVector());
+        gameObjects.add(coral);
+        corals.add(coral);
+        coral.setCollidable(false);
+        coral.setStatic(true);
+        robot.setCoral(coral);
         
 
         blueReef = new Reef(false);
@@ -123,8 +124,9 @@ public class GameInstance{
         String dataDir = null;
 
         if (dataDir == null) {
-            dataDir = "C:\\Users\\zhish\\Documents\\APCompSci_create_project\\app\\src\\main\\java\\create_project\\data\\";
-            dataDir = "C:\\Users\\leung\\Desktop\\APCompSci_create_project\\app\\src\\main\\java\\create_project\\data\\";
+            dataDir = "/Users/braydenleung/Desktop/comp sci stuff/create_project/app/src/main/java/create_project/data/";
+            // dataDir = "C:\\Users\\zhish\\Documents\\APCompSci_create_project\\app\\src\\main\\java\\create_project\\data\\";
+            // dataDir = "C:\\Users\\leung\\Desktop\\APCompSci_create_project\\app\\src\\main\\java\\create_project\\data\\";
             System.out.println("DATA_PATH not set, ");
             System.out.println("    macos/linux: export DATA_PATH=/path/to/data");
             System.out.println("    windows: set DATA_PATH=C:\\path\\to\\data");

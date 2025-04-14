@@ -11,7 +11,7 @@ public class Robot extends Box {
   boolean isRedAlliance;
   int teamNumber;
   private final static float MAX_SPEED = 186.f;
-  private final static float MAX_ACCEL = 200.f;
+  private final static float MAX_ACCEL = 150.f;
   private static final double kP = 5.0;
   private static final float ARM_LENGTH = 20.f;
 
@@ -96,6 +96,10 @@ public class Robot extends Box {
     return coral;
   }
 
+  public void setCoral(Coral coral) {
+    this.coral = coral;
+  }
+
   public void move(Vector2D direction) {
     if (lastCollisionTime + 100 > Main.getTime()) {
         this.setAcceleration(new Vector2D());
@@ -154,6 +158,23 @@ public class Robot extends Box {
             new PVector((float) this.getPosition().getX(), 5.f, (float) this.getPosition().getY()),
             intakeZoneOffset));
     intakeZone.setRotation(0, this.getRotation(), 0);
+
+    // check if out of bounds
+    if (this.getPosition().getX() > 317/2. || this.getPosition().getX() < -317/2 || this.getPosition().getY() > 690 || this.getPosition().getY() < 0) {
+      this.setVelocity(new Vector2D());
+      this.setAcceleration(new Vector2D());
+      // set position to closest in bounds position
+        if (this.getPosition().getX() > 317/2.) {
+            this.setPosition(new Vector2D(317/2., this.getPosition().getY()));
+        } else if (this.getPosition().getX() < -317/2) {
+            this.setPosition(new Vector2D(-317/2., this.getPosition().getY()));
+        }
+        if (this.getPosition().getY() > 690) {
+            this.setPosition(new Vector2D(this.getPosition().getX(), 690));
+        } else if (this.getPosition().getY() < 0) {
+            this.setPosition(new Vector2D(this.getPosition().getX(), 0));
+        }
+    }
   }
 
   @Override

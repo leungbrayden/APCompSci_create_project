@@ -3,6 +3,8 @@ package create_project;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.checkerframework.checker.units.qual.min;
+
 import processing.core.PApplet;
 import processing.core.PGraphics;
 import processing.core.PShape;
@@ -20,10 +22,14 @@ public class GameInstance{
     private PGraphics graphics;
 
     private PShape reef;
+    private PShape barge;
 
     private int[] levelPointAuto = {3,4,6,7,6,4};
     private int[] levelPointTele = {2,3,4,5,6,4};
     private int sumCoralPoints = 0;
+
+    private long timerStart;
+    private long timerEnd = 2*60*1000+15*1000;
 
     private final float fieldWidth = 317;
     private final float fieldDepth = 690f;
@@ -109,7 +115,8 @@ public class GameInstance{
         String dataDir = null;
 
         if (dataDir == null) {
-            dataDir = "C:\\Users\\leung\\Desktop\\APCompSci_create_project\\app\\src\\main\\java\\create_project\\data\\";
+            dataDir = "C:\\Users\\zhish\\Documents\\APCompSci_create_project\\app\\src\\main\\java\\create_project\\data\\";
+            dataDir = "C:\\Users\\zhish\\OneDrive\\Desktop\\APCSP FINAL\\APCompSci_create_project\\app\\src\\main\\java\\create_project\\data";
             System.out.println("DATA_PATH not set, ");
             System.out.println("    macos/linux: export DATA_PATH=/path/to/data");
             System.out.println("    windows: set DATA_PATH=C:\\path\\to\\data");
@@ -117,11 +124,15 @@ public class GameInstance{
 
         try {
             reef = graphics.loadShape(dataDir+"REEF.obj");
+            barge = graphics.loadShape(dataDir+"BARGE.obj");
+            //troubleshoot
+            System.out.println("objects loaded");
         } catch (Exception e) {
             e.printStackTrace();
         }
         // reef.scale((float)(39.37 / 1.196));
         reef.scale((float)(39.37));
+        barge.scale((float)(39.37));
 
         blueReef.loadShape(reef);
     }
@@ -176,7 +187,6 @@ public class GameInstance{
         graphics.box(width, height, depth);
         graphics.popStyle();
         graphics.popMatrix();
-
     }
 
     public PGraphics getGraphics() {
@@ -199,6 +209,12 @@ public class GameInstance{
             case 4:
                 coralPoints = levelPointTele[3];
                 break;
+            case 5: //process
+                coralPoints = levelPointTele[4];
+                break;
+            case 6: //barge
+                coralPoints = levelPointTele[5];
+                break;
         }
         theFunctionThatCountsForYou(coralPoints);
     }
@@ -211,33 +227,41 @@ public class GameInstance{
 //starts in drawHud
     public void drawHUD(PApplet app) {
         app.fill(0,0,255);
-        app.rect(100,0,900,100);
+        app.rect(100,0,890,100);
 
         app.fill(255,0,0);
         app.rect(100, 0, 450, 100);
 
-        app.fill(255); 
-        app.stroke(255); 
-        // app.text("testtext", 1080/2, 720/2); 
-        app.text(theFunctionThatCountsForYou(0),1080/3, 30); 
+        app.fill(255);
+        app.rect(480,0, 140, 100);
 
+        app.fill(255); 
+        app.stroke(0); 
+
+        app.textSize(50);
+        app.text("Alliance 1", 1080-350, 65); 
+
+        app.textSize(50);
+        app.text("Alliance 2    0", 120, 65); 
+       
+        app.textSize(50);
+        app.text(theFunctionThatCountsForYou(0),1080/2 + 110, 65); 
+        
+        app.fill(0);
+        app.textSize(25);
+        app.text(timerCount(), (1080/2)-35, 55);
         //test using keys pressed
         
     }
-    
-    public void timerCount(String[] args){
-        long timerStart = System.currentTimeMillis();
 
-        for(int i = 1; i <= 10; i++){
-            long currentTime = System.currentTimeMillis();
-            
-
-
-            
+    public String timerCount(){
+        long currentTime = System.currentTimeMillis();
+        long elapsedTime = currentTime - timerStart;
+        long timeLeft = timerEnd - elapsedTime;
+        int seconds = (int)((timeLeft/1000) % 60);
+        int minutes = (int) ((timeLeft/(1000*60))%60);
+        return String.format("%02d:%02d", minutes, seconds);
         }
-            // app.text(elapsedTime, 500, 60);
-    }
-
 
     public void createCoral() {
         Coral coral = new Coral(new PVector(0.f, 70.f, 50.f));

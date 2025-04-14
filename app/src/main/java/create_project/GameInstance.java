@@ -29,9 +29,10 @@ public class GameInstance{
     private int[] levelPointAuto = {3,4,6,7,6,4};
     private int[] levelPointTele = {2,3,4,5,6,4};
     private int sumCoralPoints = 0;
+    private boolean tele = false;
 
     private int timerStart;
-    private int timerEnd = 2*60*1000+15*1000;
+    private int timerEnd = 150000;
 
     private final float fieldWidth = 317;
     private final float fieldDepth = 690f;
@@ -199,26 +200,10 @@ public class GameInstance{
     //the cases are 1, 2, 3, 4, with input as integer. 
     public void coralScored(int input){
         int coralPoints = 0;
-        switch (input) {
-            case 1:
-                coralPoints = levelPointTele[0];
-                break;
-            case 2:
-                coralPoints = levelPointTele[1];
-                break;
-            case 3:
-                coralPoints = levelPointTele[2];
-                break;
-            case 4:
-                coralPoints = levelPointTele[3];
-                break;
-            case 5: //process
-                coralPoints = levelPointTele[4];
-                break;
-            case 6: //barge
-                coralPoints = levelPointTele[5];
-                break;
-        }
+        if (tele){
+            coralPoints = levelPointTele[input - 1];}
+            else {coralPoints = levelPointAuto[input - 1];
+            }
         theFunctionThatCountsForYou(coralPoints);
     }
 
@@ -270,6 +255,9 @@ public class GameInstance{
         int currentTime = Main.getGameTime();
         int elapsedTime = currentTime - timerStart;
         int timeLeft = timerEnd - elapsedTime;
+        if (timeLeft <= 135000){
+            tele = true;
+        }
         int seconds = (timeLeft/1000) % 60;
         int minutes = (timeLeft/(1000*60))%60;
         return String.format("%02d:%02d", minutes, seconds);

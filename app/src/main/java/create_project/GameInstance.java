@@ -52,10 +52,11 @@ public class GameInstance{
 
         // gameObjects.add(new Box(new PVector(0.f,-1.f,345.4375f + 20), 20, 4.5, 12, 4.5, 0));
 
-        gameObjects.add(new Box(new PVector(0,0.f,fieldDepth), 0, fieldWidth, 40, 10,0x55FFFFFF).isStatic().withElasticity(0.8)); 
-        gameObjects.add(new Box(new PVector(0,0.f, 0), 0, fieldWidth, 40, 20,0x55FFFFFF).isStatic().withElasticity(0.8)); 
-        gameObjects.add(new Box(new PVector(-fieldWidth/2,0.f,(fieldDepth/2)), 0, 10, 40, fieldDepth, 0x55FFFFFF).isStatic().withElasticity(0.8));
-        gameObjects.add(new Box(new PVector(fieldWidth/2,0.f, (fieldDepth/2)), 0, 10, 40, fieldDepth, 0x55FFFFFF).isStatic());
+        gameObjects.add(
+            new Box(new PVector(0,0.f,fieldDepth), 0, fieldWidth, 40, 10,0x55FFFFFF).isStatic().withElasticity(0.8).withVisibility(false));
+        gameObjects.add(new Box(new PVector(0,0.f, 0), 0, fieldWidth, 40, 20,0x55FFFFFF).isStatic().withElasticity(0.8).withVisibility(false)); 
+        gameObjects.add(new Box(new PVector(-fieldWidth/2,0.f,(fieldDepth/2)), 0, 10, 40, fieldDepth, 0x55FFFFFF).isStatic().withElasticity(0.8).withVisibility(false));
+        gameObjects.add(new Box(new PVector(fieldWidth/2,0.f, (fieldDepth/2)), 0, 10, 40, fieldDepth, 0x55FFFFFF).isStatic().withElasticity(0.8).withVisibility(false));
 
         // sample rotation constructor: 
         for (int i = 0; i > 6; i++){
@@ -81,6 +82,10 @@ public class GameInstance{
     public void returnElevator() {
         robot.returnElevator();
     }
+
+    public void ejectCoral() {
+        robot.ejectCoral();
+    }
     
     public void rotateRobot(float angle) {
         robot.setAngularVelocity(angle);
@@ -99,12 +104,12 @@ public class GameInstance{
 
         Logger.init(graphics);
 
-        String dataDir = System.getenv("DATA_PATH");
+        // String dataDir = System.getenv("DATA_PATH");
 
-        // String dataDir = null;
+        String dataDir = null;
 
         if (dataDir == null) {
-            dataDir = "C:\\Users\\zhish\\Documents\\APCompSci_create_project\\app\\src\\main\\java\\create_project\\data\\";
+            dataDir = "C:\\Users\\leung\\Desktop\\APCompSci_create_project\\app\\src\\main\\java\\create_project\\data\\";
             System.out.println("DATA_PATH not set, ");
             System.out.println("    macos/linux: export DATA_PATH=/path/to/data");
             System.out.println("    windows: set DATA_PATH=C:\\path\\to\\data");
@@ -132,16 +137,18 @@ public class GameInstance{
             }
         }
         graphics.background(50);
-        graphics.camera(0.0f,72.0f,-64.0f, (float) robot.getPosition().getX(), 0.f, (float) robot.getPosition().getY(),
+        // graphics.camera(0.0f,72.0f,-64.0f, (float) robot.getPosition().getX(), 40.f, (float) robot.getPosition().getY(),
+        //   0.0f, -1.0f, 0.0f);
+        graphics.camera(0.0f,200.0f,-64.0f, (float) robot.getPosition().getX(), 40.f, (float) robot.getPosition().getY(),
           0.0f, -1.0f, 0.0f);
         graphics.perspective();
         graphics.noStroke();
 
 
         for (GameObject gameObject : gameObjects) {
-            if (gameObject == robot.getCoral()) {
-                continue;
-            }
+            // if (gameObject == robot.getCoral()) {
+            //     continue;
+            // }
             gameObject.update();
             if (!gameObject.isVisible()) {
                 continue;
@@ -149,12 +156,7 @@ public class GameInstance{
             gameObject.draw(graphics);
         }
         robot.checkIntake(corals);
-        // if (reef != null) {
-        //     graphics.pushMatrix();
-        //     graphics.translate(0, 0, 100);
-        //     graphics.shape(reef);
-        //     graphics.popMatrix();
-        // }
+        blueReef.checkIntakeZones(corals);
         drawStaticElements();
         graphics.endDraw();
     }

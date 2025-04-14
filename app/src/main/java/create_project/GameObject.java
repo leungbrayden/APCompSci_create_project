@@ -280,6 +280,24 @@ public class GameObject {
             this.angularVelocity += angularAcceleration * Constants.deltaTime;
 
             // friction
+            velocity.scale(0.995);
+            this.angularVelocity *= 0.98;
+        }
+    }
+
+    public void update(boolean withFriction) {
+        collidable = true;
+        if (!isStatic) {
+            // postion updates
+            position.add(Vector2D.mult(velocity, Constants.deltaTime));
+            velocity.add(Vector2D.mult(acceleration, Constants.deltaTime));
+            this.setRotation(rotation + (angularVelocity * Constants.deltaTime));
+            this.angularVelocity += angularAcceleration * Constants.deltaTime;
+
+            if (!withFriction) {
+                return;
+            }
+            // friction
             velocity.scale(0.997);
             this.angularVelocity *= 0.98;
         }
@@ -401,12 +419,17 @@ public class GameObject {
     }
 
     public void setCollidable(boolean collidable) {
-        this.collidable = collidable;
+        this.isCollidable = collidable;
     }
 
     // method chaining
     public GameObject withElasticity(double elasticity) {
         this.restitution = elasticity;
+        return this;
+    }
+
+    public GameObject withVisibility(boolean isVisible) {
+        this.setVisible(isVisible);
         return this;
     }
     // public GameObject withInertia(double inertia) {

@@ -16,6 +16,7 @@ repositories {
     maven("https://jogamp.org/deployment/maven")
     maven("https://repo.clojars.org/")
     maven("https://maven.scijava.org/content/repositories/public/")
+    maven("https://jitpack.io/")
 }
 
 dependencies {
@@ -27,10 +28,6 @@ dependencies {
     // implementation("org.jogamp.gluegen:gluegen-rt-natives-macosx-universal:2.1.5")
 
     implementation("org.processing:core:3.3.7")
-
-
-
-
 
     // Use JUnit Jupiter for testing.
     testImplementation(libs.junit.jupiter)
@@ -51,6 +48,7 @@ java {
 application {
     // Define the main class for the application.
     mainClass = "create_project.Main"
+    applicationDefaultJvmArgs = listOf("-Djava.library.path=libs/natives")
 }
 
 tasks.named<Test>("test") {

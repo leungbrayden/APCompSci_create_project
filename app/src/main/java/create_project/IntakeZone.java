@@ -59,10 +59,10 @@ public class IntakeZone {
 
     // }
 
-    public void draw(PGraphics pg) {
+    public void draw(PGraphics pg, double angle) {
         if (!active) {
             pg.pushMatrix();
-            Coral.draw(pg, PVector.sub(position,new PVector(0, 4, 0)), 0, 0, Math.PI/2.);
+            Coral.draw(pg, PVector.sub(position,new PVector(0, 4, 0)), 0, this.rotationY, angle);
             pg.popMatrix();
         }
         if (!Constants.DEBUG) {
@@ -77,6 +77,14 @@ public class IntakeZone {
         pg.fill(0xAA0000FF);
         pg.box((float) width, (float) height, (float) depth);
         pg.popMatrix();
+    }
+
+    public void draw(PGraphics pg) {
+        draw(pg, 0);
+    }
+
+    public PVector getPosition() {
+        return position;
     }
 
 

@@ -26,7 +26,7 @@ public class Coral extends GameObject{
 
     @Override
     public void update() {
-        if (objectY > 50.f) {
+        if (objectY > 20.f) {
             this.notCollidable();
         } else {
             this.setCollidable(true);

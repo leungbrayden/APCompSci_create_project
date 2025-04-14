@@ -6,15 +6,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 import processing.core.PApplet;
-
+import processing.core.PConstants;
 
 public class Main extends PApplet{
-    private boolean gameStart = true;
     public static int time = 0;
-    private long timerStart;
+    GUI title = new GUI();
+    GUI select = new GUI();
+    GUI settings = new GUI();
+    GUI tutorial = new GUI();
     // PShape barge;
-
+    public Scene scene = Scene.TITLE;
     private double rotationController = 0;
+    public static int currentTime;
+
     public void settings(){
         size(1080, 720, P2D);
     }
@@ -25,19 +29,53 @@ public class Main extends PApplet{
         // size(1080, 800, P2D);
         background(0);
         frameRate(Constants.FRAMERATE);
-        startTimer();
+        // startTimer();
         GameInstance.getInstance().setGraphics(createGraphics(1080,720, P3D));
         // barge = loadShape("BARGE.obj");
+        
+        title.addButton(new Button(1080/2, 720/2, 500, 150, "Start", () -> {scene = Scene.SELECT;}));
+        title.addButton(new Button(1080/2, 720/2 + 150, 300, 80, "Settings", () -> {scene = Scene.SETTINGS;}));
+        title.addButton(new Button(1080/2, 720/2 + 280, 200, 60, "Tutorial", () -> {scene = Scene.TUTORIAL;}));
+        title.noBackground();
+
+        String[] increment = {"2438","6328","2056","2910","359"};
+    
+        for (int i = 0; i < increment.length; i++){
+        select.addButton(new Button(1080/6 + i*180, 720/2, 120, 40, increment[i], () -> {scene = Scene.GAME; Main.startTimer();}));
+        }
+
+        
     }
 
-    public void draw(){
+
+    public void draw() {
         Main.time = millis();
+        switch (scene) {
+        case TITLE:
+          background(Constants.backgroundColor);
+          title.drawScreen(this);
+          return;
+        case SELECT:
+          select.drawScreen(this);
+          return;
+        case GAME:
+          drawGame();
+          return;
+        case SETTINGS:
+          settings.drawScreen(this);
+          return;
+        case TUTORIAL:
+          tutorial.drawScreen(this);
+          return;
+        }
+      }
+
+
+    public void drawGame(){
         handleMovement();
-        if (gameStart){
             GameInstance.getInstance().draw();
             image(GameInstance.getInstance().getGraphics(), 0, 0);
             GameInstance.getInstance().drawHUD(this);
-        }
         text(Math.round(frameRate), 10, 10);
     }
 
@@ -45,8 +83,13 @@ public class Main extends PApplet{
         return time;
     }
 
-    public void startTimer(){
-        timerStart = System.currentTimeMillis();
+    public static void startTimer(){
+        Main.currentTime = Main.getTime();
+    }
+
+    public static int getGameTime(){
+       
+        return getTime() - Main.currentTime;
     }
 
     public void mousePressed(){
@@ -129,6 +172,23 @@ public class Main extends PApplet{
         }
     }
 
+    public void mouseClicked() {
+        switch (scene) {
+        case TITLE:
+          title.checkClick(this);
+          return;
+        case SELECT:
+          select.checkClick(this);
+          return;
+        case GAME:
+          return;
+        case SETTINGS:
+          settings.checkClick(this);
+        case TUTORIAL:
+          tutorial.checkClick(this);
+        }
+      }
+
     public void keyReleased() {
         keysHeld.remove(Character.valueOf(key));
     }
@@ -138,5 +198,7 @@ public class Main extends PApplet{
 		Main app = new Main();
 		PApplet.runSketch(processingArgs, app);
 	}
+
+
 
 }

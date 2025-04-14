@@ -79,6 +79,9 @@ public class Main extends PApplet{
         if (keysHeld.contains('d')) {
             movement.add(1, 0);
         }
+        if (Constants.FOLLOW_ROBOT) {
+            movement = movement.rotate(GameInstance.getInstance().getRobot().getRotation()).scale(-1.);
+        }
         GameInstance.getInstance().moveRobot(movement.normal());
         if (!rotationChanged) {
             if (Math.abs(rotationController) < 0.1) {

@@ -62,9 +62,23 @@ public class Robot extends Box {
     this.coral = intakedCoral;
   }
 
+  public void raiseL4() {
+    elevator.stop();
+    elevator.reset(elevator.getPosition(), 54);
+  }
+
+  public void raiseL3() {
+    elevator.stop();
+    elevator.reset(elevator.getPosition(), 38);
+  }
+
+  public void raiseL2() {
+    elevator.stop();
+    elevator.reset(elevator.getPosition(), 26);
+  }
+
   public void startElevator() {
     elevator.stop(); // 54
-    // elevator.reset(elevator.getPosition(), 54);
     elevator.reset(elevator.getPosition(), 36);
     // elevator.start();
     // arm.reset(arm.getPosition(), Math.PI*(3./4.));

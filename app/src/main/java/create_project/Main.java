@@ -151,14 +151,21 @@ public class Main extends PApplet{
             GameInstance.getInstance().createCoral();
         }
         switch (key) {
-            case 'f':
-                GameInstance.getInstance().startElevator();
+            case 'u':
+                GameInstance.getInstance().createCoral();
                 break;
-            case 'g':
-                GameInstance.getInstance().returnElevator();
+            case 'i':
+                GameInstance.getInstance().getRobot().raiseL4();
+                break;
+            case 'o':
+                GameInstance.getInstance().getRobot().raiseL3();
+                break;
+            case 'p':
+                GameInstance.getInstance().getRobot().raiseL2();
                 break;
             case ' ':
                 GameInstance.getInstance().ejectCoral();
+                GameInstance.getInstance().returnElevator();
                 break;
             case '1':
                 GameInstance.getInstance().coralScored(1);

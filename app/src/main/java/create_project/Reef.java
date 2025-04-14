@@ -80,7 +80,7 @@ public class Reef extends GameObject{
             Coral coral = zone.checkCollision(corals);
             if (coral != null) {
                 zone.setActive(false);
-                GameInstance.getInstance().coralScored(intakeZones.indexOf(intakeZone));
+                GameInstance.getInstance().coralScored(intakeZones.indexOf(intakeZone)+1);
                 coral.setVisible(false);
                 coral.setCollidable(false);
                 corals.remove(coral);

@@ -2,6 +2,7 @@ package create_project;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import processing.core.PApplet;
 import processing.core.PConstants;
@@ -38,6 +39,8 @@ public class GameInstance{
     private final float wallThickness = 2;
     private final float wallHeight = 50;
     private float reefAngle;
+
+    private Random random = new Random();
 
 
     private GameInstance() {
@@ -278,7 +281,13 @@ public class GameInstance{
         }
 
     public void createCoral() {
-        Coral coral = new Coral(new PVector(0.f, 70.f, 50.f));
+        Coral coral = new Coral(new PVector(-fieldWidth/2.f + 20.f, 50.f, 20.f));
+        coral.setVelocity(new Vector2D(random.nextDouble(50),0).rotate(Math.PI/4. +random.nextDouble(Math.PI/6.)));
+        gameObjects.add(coral);
+        corals.add(coral);
+
+        coral = new Coral(new PVector(fieldWidth/2.f - 20.f, 50.f, 20.f));
+        coral.setVelocity(new Vector2D(random.nextDouble(50),0).rotate(Math.PI - (Math.PI/4. + random.nextDouble(Math.PI/6.))));
         gameObjects.add(coral);
         corals.add(coral);
     }

@@ -1,7 +1,7 @@
 package create_project;
 
 public class MotionProfile {
-    private double maxVel, maxAccel;
+    private double maxVel, maxAccel, velocity;
     private double startPos, endPos, direction;
     private double minPos, maxPos;
     private double accelTime, cruiseTime, decelTime;
@@ -18,6 +18,7 @@ public class MotionProfile {
         this.maxPos = maxPos;
 
         reset(minPos, maxPos);
+        stop();
     }
 
     public void reset(double startPos, double endPos) {
@@ -27,11 +28,12 @@ public class MotionProfile {
             isMoving = false;
             return;
         }
+        velocity = maxVel;
         double distance = endPos - startPos;
         direction = Math.signum(distance);
         distance = Math.abs(distance);
 
-        double accelTimeRaw = maxVel / maxAccel;
+        double accelTimeRaw = velocity / maxAccel;
         double accelDistRaw = 0.5 * maxAccel * accelTimeRaw * accelTimeRaw;
 
         if (2 * accelDistRaw > distance) {
@@ -39,18 +41,20 @@ public class MotionProfile {
             accelTime = Math.sqrt(distance / maxAccel);
             decelTime = accelTime;
             cruiseTime = 0;
-            this.maxVel = maxAccel * accelTime;
+            this.velocity = maxAccel * accelTime;
         } else {
             // Trapezoidal profile
             accelTime = accelTimeRaw;
             decelTime = accelTimeRaw;
             cruiseDist = distance - 2 * accelDistRaw;
-            cruiseTime = cruiseDist / maxVel;
+            cruiseTime = cruiseDist / velocity;
         }
 
         accelDist = 0.5 * maxAccel * accelTime * accelTime;
         decelDist = accelDist;
         totalTime = accelTime + cruiseTime + decelTime;
+
+        this.start();
     }
     
 
@@ -65,6 +69,18 @@ public class MotionProfile {
         return maxPos;
     }
 
+    public void setMinPos(double minPos) {
+        this.minPos = minPos;
+    }
+
+    public void setMaxPos(double maxPos) {
+        this.maxPos = maxPos;
+    }
+
+    public double getTime() {
+        return time;
+    }
+
     public double getPosition() {
         if (time > totalTime) {
             return endPos;
@@ -76,11 +92,11 @@ public class MotionProfile {
         } else if (time > totalTime - accelTime){
             // Deceleration phase
             double dt = time - (accelTime + cruiseTime);
-            return startPos + (direction * (accelDist + cruiseDist + maxVel * dt - (0.5 * maxAccel * dt * dt)));
+            return startPos + (direction * (accelDist + cruiseDist + velocity * dt - (0.5 * maxAccel * dt * dt)));
         }  else {
             // Cruise phase
             double dt = time - accelTime;
-            return startPos + (direction * (accelDist + maxVel * dt));
+            return startPos + (direction * (accelDist + velocity * dt));
         }
     }
 

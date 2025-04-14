@@ -1,5 +1,7 @@
 package create_project;
 
+import processing.core.PVector;
+
 public class Vector2D {
     private double x;
     private double y;
@@ -109,5 +111,9 @@ public class Vector2D {
 
     public static Vector2D mult(Vector2D vector, double scalar) {
         return new Vector2D(vector.getX() * scalar, vector.getY() * scalar);
+    }
+
+    public PVector toPVector() {
+        return new PVector((float) this.getX(),0.f, (float)this.getY());
     }
 }

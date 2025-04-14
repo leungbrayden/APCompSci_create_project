@@ -1,11 +1,12 @@
 
 package create_project;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import processing.core.PApplet;
-import processing.core.PShape;
+
 
 public class Main extends PApplet{
     private boolean gameStart = true;
@@ -37,7 +38,7 @@ public class Main extends PApplet{
             image(GameInstance.getInstance().getGraphics(), 0, 0);
             GameInstance.getInstance().drawHUD(this);
         }
-
+        text(Math.round(frameRate), 10, 10);
     }
 
     public static int getTime() {
@@ -109,6 +110,9 @@ public class Main extends PApplet{
                 break;
             case 'g':
                 GameInstance.getInstance().returnElevator();
+                break;
+            case ' ':
+                GameInstance.getInstance().ejectCoral();
                 break;
             case '1':
                 GameInstance.getInstance().coralScored(1);

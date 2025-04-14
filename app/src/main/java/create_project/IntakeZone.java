@@ -35,29 +35,37 @@ public class IntakeZone {
             return null;
         }
         for (Coral coral : corals) {
-            if (coral.isVisible() && coral.isCollidable()) {
+            if (coral.isVisible()) {
                 if (coral.getPosition().getX() > position.x - width / 2. && coral.getPosition().getX() < position.x + width / 2 &&
                     coral.getY() > position.y - height / 2 && coral.getY() < position.y + height / 2 &&
                     coral.getPosition().getY() > position.z - depth / 2. && coral.getPosition().getY() < position.z + depth / 2) {
-                        
-                    coral.setVisible(false);
-                    coral.setCollidable(false);
-                    coral.setPosition(new Vector2D());
-                    coral.setRotation(0);
-                    coral.setStatic(true);
-                    
                     return coral;
                 }
             }
         }
         return null;
     }
+
+    public boolean isActive() {
+        return isActive();
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+
     // public void update() {
 
     // }
 
     public void draw(PGraphics pg) {
         if (!active) {
+            pg.pushMatrix();
+            Coral.draw(pg, PVector.sub(position,new PVector(0, 4, 0)), 0, 0, Math.PI/2.);
+            pg.popMatrix();
+        }
+        if (!Constants.DEBUG) {
             return;
         }
         pg.pushMatrix();

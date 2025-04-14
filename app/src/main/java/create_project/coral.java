@@ -11,7 +11,7 @@ public class Coral extends GameObject{
     private final static float radius = 2.25f;
     private float objectY = 0.f;
     private float velocityY = 0.f;
-    private float accelerationY = -385.8f;
+    private float accelerationY = -100.0f;
 
 
     public Coral(PVector position) {
@@ -26,15 +26,21 @@ public class Coral extends GameObject{
 
     @Override
     public void update() {
-        super.update();
+        if (objectY > 50.f) {
+            this.notCollidable();
+        } else {
+            this.setCollidable(true);
+        }
         if (getStatic()) {
             return;
         }
         if (objectY > 2.25f) {
+            super.update(false);
             objectY += getVelocityY() * Constants.deltaTime;
             setVelocityY((float) (getVelocityY() + getAccelerationY() * Constants.deltaTime));
         } else {
             objectY = 2.25f;
+            super.update();
         }
         
     }
@@ -58,6 +64,20 @@ public class Coral extends GameObject{
         // pg.fill(0x5500FF00);
         // pg.box(width, radius*2, radius*2);
         pg.popMatrix();
+    }
+
+    public static void draw(PGraphics pg, PVector position, double rotationX, double rotationY, double rotationZ) {
+        pg.fill(0xFFFFFFFF);
+        pg.translate(position.x, position.y, position.z);
+        pg.rotateY((float)rotationY);
+        pg.rotateX((float)rotationX);
+        pg.rotateZ((float)rotationZ);
+        pg.beginShape(18);
+        for (int i = 0; i < 20; i++) {
+            pg.vertex(width/2.f, (float) Math.sin((Math.PI*2) / (i / 20.f)) * radius, (float) Math.cos((Math.PI*2) / (i / 20.f)) * radius);
+            pg.vertex(-width/2.f, (float) Math.sin((Math.PI*2) / (i / 20.f)) * radius, (float) Math.cos((Math.PI*2) / (i / 20.f)) * radius);
+        }
+        pg.endShape(2);
     }
 
     public void setY(float y) {

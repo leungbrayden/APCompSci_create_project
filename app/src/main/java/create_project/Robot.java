@@ -2,6 +2,8 @@ package create_project;
 
 import java.util.List;
 
+import javax.lang.model.type.NullType;
+
 import processing.core.PGraphics;
 import processing.core.PVector;
 
@@ -16,8 +18,16 @@ public class Robot extends Box {
 //   private boolean holdingCoral = true;
   private Coral coral = null;
   private double ELEVATOR_HEIGHT = 90;
-  private MotionProfile elevator = new MotionProfile(0, ELEVATOR_HEIGHT*(2./3.), 100, 25);
-  private MotionProfile arm = new MotionProfile(Math.PI*(3./2.), Math.PI*2, Math.PI/4., 100);
+  // private MotionProfile elevator = new MotionProfile(0, ELEVATOR_HEIGHT*(2./3.), 100, 25);
+  // private MotionProfile arm = new MotionProfile(Math.PI*(3./2.), Math.PI*2, Math.PI/4., 100);
+  private Elevator elevator = new Elevator(
+    100, 
+    100, 
+    new Elevator.Stage(28, 27),
+    new Elevator.Stage(30, 25.5),
+    new Elevator.Stage(32, 23),
+    new Elevator.Stage(10, 20.5)
+    );
 
   private int lastCollisionTime = 0;
 
@@ -43,26 +53,28 @@ public class Robot extends Box {
     if (intakedCoral == null || coral != null) {
       return;
     }
+    // intakedCoral.setVisible(false);
+    intakedCoral.setCollidable(false);
+    intakedCoral.setPosition(new Vector2D());
+    intakedCoral.setRotation(0);
+    intakedCoral.setStatic(true);
+    
     this.coral = intakedCoral;
-    this.coral.setCollidable(false);
-    this.coral.setPosition(new Vector2D());
-    this.coral.setStatic(true);
   }
 
   public void startElevator() {
     elevator.stop();
-    elevator.reset(elevator.getPosition(), elevator.getMaxPos());
-    elevator.start();
-    arm.reset(arm.getPosition(), Math.PI*(3./4.));
-    arm.start();
+    elevator.reset(elevator.getPosition(), 54);
+    // elevator.start();
+    // arm.reset(arm.getPosition(), Math.PI*(3./4.));
+    // arm.start();
   }
 
   public void returnElevator() {
     elevator.stop();
     elevator.reset(elevator.getPosition(), elevator.getMinPos());
-    elevator.start();
-    arm.reset(arm.getPosition(), arm.getMinPos());
-    arm.start();
+    // arm.reset(arm.getPosition(), arm.getMinPos());
+    // arm.start();
   }
 
   public Coral getCoral() {
@@ -87,8 +99,14 @@ public class Robot extends Box {
   }
 
   public void ejectCoral() {
-
-    coral.setVisible(false);
+    if (coral == null) {
+      return;
+    }
+    coral.setCollidable(true);
+    coral.setStatic(false);
+    coral.setVelocity(new Vector2D(0,-100).rotate(this.getRotation()));
+    this.coral = new Coral(new PVector()) {};
+    this.coral = null;
   }
   
   @Override
@@ -107,7 +125,11 @@ public class Robot extends Box {
 
   @Override
   public void update() {
+    if (this.getVelocity().magnitude() < 0.2) {
+      this.setVelocity(new Vector2D());
+    }
     super.update();
+
     PVector intakeZoneOffset = new PVector(
         (float)(intakeZonePosition.x*Math.cos(this.getRotation()) - intakeZonePosition.z*Math.sin(this.getRotation())), 
         0.f, 
@@ -153,37 +175,26 @@ public class Robot extends Box {
         //     Logger.recordVector(this.getVelocity(), new PVector((float) this.getPosition().getX(), 10.f, (float) this.getPosition().getY()), 0xFF00FF00);
         // }
 
-        if (coral != null) {
-            pg.pushMatrix();
-            coral.setVisible(true);
-            pg.translate(0.f, (float) elevator.getPosition(), 0.f);
-            coral.draw(pg);
-            pg.popMatrix();
-        }
-
         pg.fill(0xFF000000);
 
         pg.translate(0.f, 2, -2.5f);
         pg.rotateX((float) -Math.PI* (8.f/180.f));
-        
-        pg.pushMatrix();
-        pg.translate(0.f, (float) (ELEVATOR_HEIGHT/6.), 0.f);
-        // pg.box(10,(float) (ELEVATOR_HEIGHT/3.), 2);
-        drawBoxFrame(pg, 23, ELEVATOR_HEIGHT/3. + 3, false);
-        pg.popMatrix();
 
-        pg.pushMatrix();
-        pg.translate(0.f, (float)((ELEVATOR_HEIGHT/6.) + (elevator.getPosition()*(1./2.))), 0.f);
-        drawBoxFrame(pg, 21.5, ELEVATOR_HEIGHT/3. + 3, false);
-        pg.popMatrix();
-
-        pg.pushMatrix();
-        pg.translate(0.f,  (float)(5 + elevator.getPosition()), 0.f);
-        // pg.box(6, (float) (ELEVATOR_HEIGHT/3.), 2);
-        drawBoxFrame(pg, 18, 10, true);
-        pg.popMatrix();
-
+        elevator.draw(pg);
         elevator.update();
+
+        if (coral != null) {
+          // coral.setVisible(true);
+          double offset = elevator.getPosition(elevator.getLastStage()) * Math.cos((82.*Math.PI)/180.);
+          coral.setPosition(this.getPosition().copy().add(new Vector2D(0, -offset).rotate(this.getRotation())));
+          coral.setY((float) (2. + elevator.getPosition(elevator.getLastStage()) * Math.sin((82.*Math.PI)/180.)));
+          coral.setRotation((float)(Math.PI/2.f + this.getRotation()));
+          // pg.translate(0.f, (float) (3 + elevator.getPosition()), -5.f);
+          // pg.rotateY((float)(Math.PI/2.f));
+          // pg.rotateX((float) -Math.PI* (8.f/180.f));
+          // pg.printMatrix();
+      }
+
 
 
         // pg.translate(-2, 2 +40/2, 0);

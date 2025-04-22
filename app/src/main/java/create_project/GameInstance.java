@@ -124,8 +124,8 @@ public class GameInstance{
         String dataDir = null;
 
         if (dataDir == null) {
-            dataDir = "/Users/braydenleung/Desktop/comp sci stuff/create_project/app/src/main/java/create_project/data/";
-            // dataDir = "C:\\Users\\zhish\\Documents\\APCompSci_create_project\\app\\src\\main\\java\\create_project\\data\\";
+            // dataDir = "/Users/braydenleung/Desktop/comp sci stuff/create_project/app/src/main/java/create_project/data/";
+            dataDir = "C:\\Users\\zhish\\Documents\\APCompSci_create_project\\app\\src\\main\\java\\create_project\\data\\";
             // dataDir = "C:\\Users\\leung\\Desktop\\APCompSci_create_project\\app\\src\\main\\java\\create_project\\data\\";
             System.out.println("DATA_PATH not set, ");
             System.out.println("    macos/linux: export DATA_PATH=/path/to/data");
@@ -221,10 +221,10 @@ public class GameInstance{
         } else {
             coralPoints = levelPointAuto[input - 1];
         }
-        theFunctionThatCountsForYou(coralPoints);
+        pointCount(coralPoints);
     }
 
-    private int theFunctionThatCountsForYou(int coralPoints){
+    private int pointCount(int coralPoints){
         sumCoralPoints += coralPoints;
         return sumCoralPoints;
     }
@@ -254,12 +254,12 @@ public class GameInstance{
         app.textSize(50);
         app.text("Alliance 2", 840, 45); 
 
-        int score = theFunctionThatCountsForYou(0);
+        int score = pointCount(0);
         int digitCount = (int) Math.log10(score + 1) + 1;
         float widthChange = (digitCount - 1) * 15;
        
         app.textSize(50);
-        app.text(theFunctionThatCountsForYou(0),1080/2+30 - (130 + widthChange), 45); 
+        app.text(pointCount(0),1080/2+30 - (130 + widthChange), 45); 
         
         app.fill(0);
         app.textSize(25);

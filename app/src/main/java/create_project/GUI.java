@@ -47,9 +47,11 @@ public class GUI {
 
   public void checkClick(PApplet app) {
     for (int i = 0; i < buttons.size(); i++) {
-      buttons.get(i).checkClick(app);
-    }
+      if (buttons.get(i).isHovering(app)){
+      buttons.get(i).action.run();
+      }
   }
+}
 }
 
 class Text {
